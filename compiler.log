@@ -1,0 +1,353 @@
+Hello from Docker Java compiler!
+2025-08-16 16:42:28 INFO  org.coderun.Main - Запуск приложения
+2025-08-16 16:42:28 DEBUG org.coderun.Main - Инициализация Docker клиента...
+2025-08-16 16:42:28 INFO  org.coderun.Main - Docker клиент инициализирован
+2025-08-16 16:42:28 DEBUG org.coderun.Main - Создание временной директории и файла Hello.java...
+2025-08-16 16:42:28 INFO  org.coderun.Main - Исходный файл /tmp/code17478827196945661024/Hello.java создан
+2025-08-16 16:42:28 DEBUG org.coderun.Main - Загрузка образа openjdk:21 (если не скачан)...
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000001 preparing request execution
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000001 target auth state: UNCHALLENGED
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000001 proxy auth state: UNCHALLENGED
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000001 acquiring connection with route {}->[unix://localhost:2375]
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000001 acquiring endpoint (3 MINUTES)
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000001 endpoint lease request (3 MINUTES) [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 0 of 2147483647; total allocated: 0 of 2147483647]
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000001 endpoint leased [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000001 acquired ep-0000000001
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000001 acquired endpoint ep-0000000001
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000001 opening connection {}->[unix://localhost:2375]
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000001 connecting endpoint (null)
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000001 connecting endpoint to unix://localhost:2375 (3 MINUTES)
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.DefaultHttpClientConnectionOperator - unix://localhost:2375 connecting null->localhost/127.0.0.1:2375 (3 MINUTES)
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.DefaultHttpClientConnectionOperator - http-outgoing-0 unix://localhost:2375 connected /var/run/docker.sock->/var/run/docker.sock
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.DefaultManagedHttpClientConnection - http-outgoing-0 set socket timeout to 0 MILLISECONDS
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000001 connected http-outgoing-0
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000001 endpoint connected
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000001 executing POST /images/create?fromImage=openjdk%3A21
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.protocol.RequestAddCookies - ex-0000000001 Cookie spec selected: strict
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000001 start execution ex-0000000001
+2025-08-16 16:42:28 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000001 executing exchange ex-0000000001 over http-outgoing-0
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> POST /images/create?fromImage=openjdk%3A21 HTTP/1.1
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> X-Registry-Auth: eyJ1c2VybmFtZSI6Imt1cHJpNCIsInBhc3N3b3JkIjoiZGNrcl9wYXRfWXVqN090OG9LZjVoMWVycTlCc1hJWnZPb0NnIiwiZW1haWwiOm51bGwsInNlcnZlcmFkZHJlc3MiOiJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iLCJhdXRoIjpudWxsLCJyZWdpc3RyeXRva2VuIjpudWxsLCJpZGVudGl0eXRva2VuIjpudWxsLCJzdGFja09yY2hlc3RyYXRvciI6bnVsbCwiYXV0aCI6ImEzVndjbWswT21SamEzSmZjR0YwWDFsMWFqZFBkRGh2UzJZMWFERmxjbkU1UW5OWVNWcDJUMjlEWnc9PSJ9
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> accept: application/octet-stream
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> content-type: application/json
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Accept-Encoding: gzip, x-gzip, deflate
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Host: localhost:2375
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Content-Length: 0
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Connection: keep-alive
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "POST /images/create?fromImage=openjdk%3A21 HTTP/1.1[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "X-Registry-Auth: eyJ1c2VybmFtZSI6Imt1cHJpNCIsInBhc3N3b3JkIjoiZGNrcl9wYXRfWXVqN090OG9LZjVoMWVycTlCc1hJWnZPb0NnIiwiZW1haWwiOm51bGwsInNlcnZlcmFkZHJlc3MiOiJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iLCJhdXRoIjpudWxsLCJyZWdpc3RyeXRva2VuIjpudWxsLCJpZGVudGl0eXRva2VuIjpudWxsLCJzdGFja09yY2hlc3RyYXRvciI6bnVsbCwiYXV0aCI6ImEzVndjbWswT21SamEzSmZjR0YwWDFsMWFqZFBkRGh2UzJZMWFERmxjbkU1UW5OWVNWcDJUMjlEWnc9PSJ9[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "accept: application/octet-stream[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "content-type: application/json[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Accept-Encoding: gzip, x-gzip, deflate[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Host: localhost:2375[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Content-Length: 0[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Connection: keep-alive[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)[\r][\n]"
+2025-08-16 16:42:28 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "HTTP/1.1 200 OK[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Api-Version: 1.51[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Content-Type: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Docker-Experimental: false[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Ostype: linux[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Server: Docker/28.3.3 (linux)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Date: Sat, 16 Aug 2025 13:42:31 GMT[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Transfer-Encoding: chunked[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "35[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "{"status":"Pulling from library/openjdk","id":"21"}[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << HTTP/1.1 200 OK
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Api-Version: 1.51
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Content-Type: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Docker-Experimental: false
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Ostype: linux
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Server: Docker/28.3.3 (linux)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Date: Sat, 16 Aug 2025 13:42:31 GMT
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Transfer-Encoding: chunked
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000001 connection can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG c.g.d.a.c.PullImageResultCallback - ResponseItem(stream=null, status=Pulling from library/openjdk, progressDetail=null, progress=null, id=21, from=null, time=null, errorDetail=null, error=null, aux=null)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "5e[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "{"status":"Digest: sha256:af9de795d1f8d3b6172f6c55ca9ba1c5768baa11bb2dc8af7045c7db9d4c33ac"}[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "39[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "{"status":"Status: Image is up to date for openjdk:21"}[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "0[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG c.g.d.a.c.PullImageResultCallback - ResponseItem(stream=null, status=Digest: sha256:af9de795d1f8d3b6172f6c55ca9ba1c5768baa11bb2dc8af7045c7db9d4c33ac, progressDetail=null, progress=null, id=null, from=null, time=null, errorDetail=null, error=null, aux=null)
+2025-08-16 16:42:31 DEBUG c.g.d.a.c.PullImageResultCallback - ResponseItem(stream=null, status=Status: Image is up to date for openjdk:21, progressDetail=null, progress=null, id=null, from=null, time=null, errorDetail=null, error=null, aux=null)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000001 releasing valid endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000001 releasing endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000001 connection http-outgoing-0 can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000001 connection released [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 INFO  org.coderun.Main - Образ openjdk:21 готов
+2025-08-16 16:42:31 DEBUG org.coderun.Main - Создание контейнера...
+2025-08-16 16:42:31 DEBUG c.g.d.core.command.AbstrDockerCmd - Cmd: com.github.dockerjava.core.command.CreateContainerCmdImpl@3185fa6b[aliases=<null>,argsEscaped=<null>,attachStderr=<null>,attachStdin=<null>,attachStdout=<null>,authConfig=AuthConfig(username=kupri4, email=null, registryAddress=https://index.docker.io/v1/, stackOrchestrator=null),cmd={sh,-c,javac /code/Hello.java && java -cp /code Hello},domainName=<null>,entrypoint=<null>,env=<null>,exposedPorts=ExposedPorts(exposedPorts=[]),healthcheck=<null>,hostConfig=HostConfig(binds=[/tmp/code17478827196945661024:/code:rw], blkioWeight=null, blkioWeightDevice=null, blkioDeviceReadBps=null, blkioDeviceWriteBps=null, blkioDeviceReadIOps=null, blkioDeviceWriteIOps=null, memorySwappiness=null, nanoCPUs=null, annotations=null, capAdd=null, capDrop=null, containerIDFile=null, cpuPeriod=null, cpuRealtimePeriod=null, cpuRealtimeRuntime=null, cpuShares=null, cpuQuota=null, cpusetCpus=null, cpusetMems=null, devices=null, deviceCgroupRules=null, deviceRequests=null, diskQuota=null, dns=null, dnsOptions=null, dnsSearch=null, extraHosts=null, groupAdd=null, ipcMode=null, cgroup=null, links=[], logConfig=LogConfig(type=null, config=null), lxcConf=null, memory=null, memorySwap=null, memoryReservation=null, kernelMemory=null, networkMode=null, oomKillDisable=null, init=null, autoRemove=null, oomScoreAdj=null, portBindings=null, privileged=null, publishAllPorts=null, readonlyRootfs=null, restartPolicy=null, ulimits=null, cpuCount=null, cpuPercent=null, ioMaximumIOps=null, ioMaximumBandwidth=null, volumesFrom=null, mounts=null, pidMode=null, isolation=null, securityOpts=null, storageOpt=null, cgroupParent=null, volumeDriver=null, shmSize=null, pidsLimit=null, runtime=null, tmpFs=null, utSMode=null, usernsMode=null, sysctls=null, consoleSize=null, cgroupnsMode=null),hostName=<null>,image=openjdk:21,ipv4Address=<null>,ipv6Address=<null>,labels=<null>,macAddress=<null>,name=<null>,networkDisabled=<null>,networkingConfig=<null>,onBuild=<null>,platform=<null>,portSpecs=<null>,shell=<null>,stdInOnce=<null>,stdinOpen=<null>,stopSignal=<null>,stopTimeout=<null>,tty=<null>,user=<null>,volumes=Volumes(volumes=[]),workingDir=<null>]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000002 preparing request execution
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000002 target auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000002 proxy auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000002 acquiring connection with route {}->[unix://localhost:2375]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000002 acquiring endpoint (3 MINUTES)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000002 endpoint lease request (3 MINUTES) [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000002 endpoint leased [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000002 acquired ep-0000000002
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000002 acquired endpoint ep-0000000002
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000002 executing POST /containers/create
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.protocol.RequestAddCookies - ex-0000000002 Cookie spec selected: strict
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000002 start execution ex-0000000002
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000002 executing exchange ex-0000000002 over http-outgoing-0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> POST /containers/create HTTP/1.1
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> X-Registry-Auth: eyJ1c2VybmFtZSI6Imt1cHJpNCIsInBhc3N3b3JkIjoiZGNrcl9wYXRfWXVqN090OG9LZjVoMWVycTlCc1hJWnZPb0NnIiwiZW1haWwiOm51bGwsInNlcnZlcmFkZHJlc3MiOiJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iLCJhdXRoIjpudWxsLCJyZWdpc3RyeXRva2VuIjpudWxsLCJpZGVudGl0eXRva2VuIjpudWxsLCJzdGFja09yY2hlc3RyYXRvciI6bnVsbCwiYXV0aCI6ImEzVndjbWswT21SamEzSmZjR0YwWDFsMWFqZFBkRGh2UzJZMWFERmxjbkU1UW5OWVNWcDJUMjlEWnc9PSJ9
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> accept: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> content-type: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Accept-Encoding: gzip, x-gzip, deflate
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Host: localhost:2375
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Content-Length: 1871
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Connection: keep-alive
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "POST /containers/create HTTP/1.1[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "X-Registry-Auth: eyJ1c2VybmFtZSI6Imt1cHJpNCIsInBhc3N3b3JkIjoiZGNrcl9wYXRfWXVqN090OG9LZjVoMWVycTlCc1hJWnZPb0NnIiwiZW1haWwiOm51bGwsInNlcnZlcmFkZHJlc3MiOiJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iLCJhdXRoIjpudWxsLCJyZWdpc3RyeXRva2VuIjpudWxsLCJpZGVudGl0eXRva2VuIjpudWxsLCJzdGFja09yY2hlc3RyYXRvciI6bnVsbCwiYXV0aCI6ImEzVndjbWswT21SamEzSmZjR0YwWDFsMWFqZFBkRGh2UzJZMWFERmxjbkU1UW5OWVNWcDJUMjlEWnc9PSJ9[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "accept: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "content-type: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Accept-Encoding: gzip, x-gzip, deflate[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Host: localhost:2375[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Content-Length: 1871[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Connection: keep-alive[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "{"Hostname":null,"Domainname":null,"User":null,"AttachStdin":null,"AttachStdout":null,"AttachStderr":null,"PortSpecs":null,"Tty":null,"OpenStdin":null,"StdinOnce":null,"Env":null,"Cmd":["sh","-c","javac /code/Hello.java && java -cp /code Hello"],"Healthcheck":null,"ArgsEscaped":null,"Entrypoint":null,"Image":"openjdk:21","Volumes":{},"WorkingDir":null,"MacAddress":null,"OnBuild":null,"NetworkDisabled":null,"ExposedPorts":{},"StopSignal":null,"StopTimeout":null,"HostConfig":{"Binds":["/tmp/code17478827196945661024:/code:rw"],"BlkioWeight":null,"BlkioWeightDevice":null,"BlkioDeviceReadBps":null,"BlkioDeviceWriteBps":null,"BlkioDeviceReadIOps":null,"BlkioDeviceWriteIOps":null,"MemorySwappiness":null,"NanoCpus":null,"Annotations":null,"CapAdd":null,"CapDrop":null,"ContainerIDFile":null,"CpuPeriod":null,"CpuRealtimePeriod":null,"CpuRealtimeRuntime":null,"CpuShares":null,"CpuQuota":null,"CpusetCpus":null,"CpusetMems":null,"Devices":null,"DeviceCgroupRules":null,"DeviceRequests":null,"DiskQuota":null,"Dns":null,"DnsOptions":null,"DnsSearch":null,"ExtraHosts":null,"GroupAdd":null,"IpcMode":null,"Cgroup":null,"Links":null,"LogConfig":null,"LxcConf":null,"Memory":null,"MemorySwap":null,"MemoryReservation":null,"KernelMemory":null,"NetworkMode":null,"OomKillDisable":null,"Init":null,"AutoRemove":null,"OomScoreAdj":null,"PortBindings":null,"Privileged":null,"PublishAllPorts":null,"ReadonlyRootfs":null,"RestartPolicy":null,"Ulimits":null,"CpuCount":null,"CpuPercent":null,"IOMaximumIOps":null,"IOMaximumBandwidth":null,"VolumesFrom":null,"Mounts":null,"PidMode":null,"Isolation":null,"SecurityOpt":null,"StorageOpt":null,"CgroupParent":null,"VolumeDriver":null,"ShmSize":null,"PidsLimit":null,"Runtime":null,"Tmpfs":null,"UTSMode":null,"UsernsMode":null,"Sysctls":null,"ConsoleSize":null,"CgroupnsMode":null},"Labels":null,"Shell":null,"NetworkingConfig":null}"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "HTTP/1.1 201 Created[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Api-Version: 1.51[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Content-Type: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Docker-Experimental: false[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Ostype: linux[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Server: Docker/28.3.3 (linux)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Date: Sat, 16 Aug 2025 13:42:31 GMT[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Content-Length: 88[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "{"Id":"c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea","Warnings":[]}[\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << HTTP/1.1 201 Created
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Api-Version: 1.51
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Content-Type: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Docker-Experimental: false
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Ostype: linux
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Server: Docker/28.3.3 (linux)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Date: Sat, 16 Aug 2025 13:42:31 GMT
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Content-Length: 88
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000002 connection can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000002 releasing valid endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000002 releasing endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000002 connection http-outgoing-0 can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000002 connection released [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG c.g.d.core.command.AbstrDockerCmd - Cmd: c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000003 preparing request execution
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000003 target auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000003 proxy auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000003 acquiring connection with route {}->[unix://localhost:2375]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000003 acquiring endpoint (3 MINUTES)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000003 endpoint lease request (3 MINUTES) [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000003 endpoint leased [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000003 acquired ep-0000000003
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000003 acquired endpoint ep-0000000003
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000003 executing POST /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/start
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.protocol.RequestAddCookies - ex-0000000003 Cookie spec selected: strict
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000003 start execution ex-0000000003
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000003 executing exchange ex-0000000003 over http-outgoing-0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> POST /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/start HTTP/1.1
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> accept: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> content-type: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Accept-Encoding: gzip, x-gzip, deflate
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Host: localhost:2375
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Content-Length: 0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Connection: keep-alive
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "POST /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/start HTTP/1.1[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "accept: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "content-type: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Accept-Encoding: gzip, x-gzip, deflate[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Host: localhost:2375[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Content-Length: 0[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Connection: keep-alive[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "HTTP/1.1 204 No Content[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Api-Version: 1.51[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Docker-Experimental: false[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Ostype: linux[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Server: Docker/28.3.3 (linux)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Date: Sat, 16 Aug 2025 13:42:31 GMT[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << HTTP/1.1 204 No Content
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Api-Version: 1.51
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Docker-Experimental: false
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Ostype: linux
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Server: Docker/28.3.3 (linux)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Date: Sat, 16 Aug 2025 13:42:31 GMT
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000003 connection can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000003 releasing valid endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000003 releasing endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000003 connection http-outgoing-0 can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000003 connection released [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 INFO  org.coderun.Main - Контейнер c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea запущен
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000004 preparing request execution
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000004 target auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000004 proxy auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000004 acquiring connection with route {}->[unix://localhost:2375]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000004 acquiring endpoint (3 MINUTES)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000004 endpoint lease request (3 MINUTES) [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000004 endpoint leased [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000004 acquired ep-0000000004
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000004 acquired endpoint ep-0000000004
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000004 executing POST /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/wait
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.protocol.RequestAddCookies - ex-0000000004 Cookie spec selected: strict
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000004 start execution ex-0000000004
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000004 executing exchange ex-0000000004 over http-outgoing-0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> POST /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/wait HTTP/1.1
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> accept: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> content-type: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Accept-Encoding: gzip, x-gzip, deflate
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Host: localhost:2375
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Content-Length: 0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Connection: keep-alive
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "POST /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/wait HTTP/1.1[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "accept: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "content-type: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Accept-Encoding: gzip, x-gzip, deflate[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Host: localhost:2375[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Content-Length: 0[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Connection: keep-alive[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "HTTP/1.1 200 OK[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Api-Version: 1.51[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Content-Type: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Docker-Experimental: false[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Ostype: linux[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Server: Docker/28.3.3 (linux)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Date: Sat, 16 Aug 2025 13:42:31 GMT[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Transfer-Encoding: chunked[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << HTTP/1.1 200 OK
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Api-Version: 1.51
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Content-Type: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Docker-Experimental: false
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Ostype: linux
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Server: Docker/28.3.3 (linux)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Date: Sat, 16 Aug 2025 13:42:31 GMT
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Transfer-Encoding: chunked
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000004 connection can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "11[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "{"StatusCode":0}[\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "0[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG c.g.d.a.c.WaitContainerResultCallback - WaitResponse(statusCode=0)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000004 releasing valid endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000004 releasing endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000004 connection http-outgoing-0 can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000004 connection released [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 INFO  org.coderun.Main - Контейнер c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea завершил работу
+2025-08-16 16:42:31 DEBUG org.coderun.Main - Получение логов контейнера c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea...
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000005 preparing request execution
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000005 target auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000005 proxy auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000005 acquiring connection with route {}->[unix://localhost:2375]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000005 acquiring endpoint (3 MINUTES)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000005 endpoint lease request (3 MINUTES) [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000005 endpoint leased [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000005 acquired ep-0000000005
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000005 acquired endpoint ep-0000000005
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000005 executing GET /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/logs?stdout=true&stderr=true
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.protocol.RequestAddCookies - ex-0000000005 Cookie spec selected: strict
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000005 start execution ex-0000000005
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000005 executing exchange ex-0000000005 over http-outgoing-0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> GET /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/logs?stdout=true&stderr=true HTTP/1.1
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Accept-Encoding: gzip, x-gzip, deflate
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Host: localhost:2375
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Connection: keep-alive
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "GET /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea/logs?stdout=true&stderr=true HTTP/1.1[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Accept-Encoding: gzip, x-gzip, deflate[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Host: localhost:2375[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Connection: keep-alive[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "HTTP/1.1 200 OK[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Api-Version: 1.51[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Content-Type: application/vnd.docker.multiplexed-stream[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Docker-Experimental: false[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Ostype: linux[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Server: Docker/28.3.3 (linux)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Date: Sat, 16 Aug 2025 13:42:31 GMT[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Transfer-Encoding: chunked[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << HTTP/1.1 200 OK
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Api-Version: 1.51
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Content-Type: application/vnd.docker.multiplexed-stream
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Docker-Experimental: false
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Ostype: linux
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Server: Docker/28.3.3 (linux)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Date: Sat, 16 Aug 2025 13:42:31 GMT
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Transfer-Encoding: chunked
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000005 connection can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "29[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[0x1][0x0][0x0][0x0][0x0][0x0][0x0]!Hello from Docker Java compiler![\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "0[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000005 releasing valid endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000005 releasing endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000005 connection http-outgoing-0 can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000005 connection released [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG org.coderun.Main - Логи контейнера c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea получены (33 символов)
+2025-08-16 16:42:31 INFO  org.coderun.Main - Вывод контейнера:
+Hello from Docker Java compiler!
+
+2025-08-16 16:42:31 DEBUG c.g.d.core.command.AbstrDockerCmd - Cmd: c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea,true,<null>
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000006 preparing request execution
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000006 target auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ProtocolExec - ex-0000000006 proxy auth state: UNCHALLENGED
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.impl.classic.ConnectExec - ex-0000000006 acquiring connection with route {}->[unix://localhost:2375]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000006 acquiring endpoint (3 MINUTES)
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000006 endpoint lease request (3 MINUTES) [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000006 endpoint leased [route: {}->[unix://localhost:2375]][total available: 0; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ex-0000000006 acquired ep-0000000006
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ex-0000000006 acquired endpoint ep-0000000006
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000006 executing DELETE /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea?force=true
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.protocol.RequestAddCookies - ex-0000000006 Cookie spec selected: strict
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000006 start execution ex-0000000006
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000006 executing exchange ex-0000000006 over http-outgoing-0
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> DELETE /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea?force=true HTTP/1.1
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> accept: application/json
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Accept-Encoding: gzip, x-gzip, deflate
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Host: localhost:2375
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> Connection: keep-alive
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 >> User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "DELETE /containers/c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea?force=true HTTP/1.1[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "accept: application/json[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Accept-Encoding: gzip, x-gzip, deflate[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Host: localhost:2375[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "Connection: keep-alive[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "User-Agent: Apache-HttpClient/5.5 (Java/21.0.8)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 >> "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "HTTP/1.1 204 No Content[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Api-Version: 1.51[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Docker-Experimental: false[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Ostype: linux[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Server: Docker/28.3.3 (linux)[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "Date: Sat, 16 Aug 2025 13:42:31 GMT[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.wire - http-outgoing-0 << "[\r][\n]"
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << HTTP/1.1 204 No Content
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Api-Version: 1.51
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Docker-Experimental: false
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Ostype: linux
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Server: Docker/28.3.3 (linux)
+2025-08-16 16:42:31 DEBUG org.apache.hc.client5.http.headers - http-outgoing-0 << Date: Sat, 16 Aug 2025 13:42:31 GMT
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.classic.MainClientExec - ex-0000000006 connection can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.c.InternalHttpClient - ep-0000000006 releasing valid endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000006 releasing endpoint
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000006 connection http-outgoing-0 can be kept alive for 3 MINUTES
+2025-08-16 16:42:31 DEBUG o.a.h.c.h.i.i.PoolingHttpClientConnectionManager - ep-0000000006 connection released [route: {}->[unix://localhost:2375]][total available: 1; route allocated: 1 of 2147483647; total allocated: 1 of 2147483647]
+2025-08-16 16:42:31 INFO  org.coderun.Main - Контейнер c9678429971037837040f97764acb6e6156bc20a5d58edbb4db2300b86f965ea удалён
