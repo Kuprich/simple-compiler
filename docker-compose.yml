@@ -1,0 +1,21 @@
+services:
+  dind:
+    image: docker:24.0.5-dind
+    privileged: true
+    container_name: dind
+    environment:
+      - DOCKER_TLS_CERTDIR=    # отключаем TLS для простоты
+    command: ["--host=tcp://0.0.0.0:2375", "--storage-driver=vfs"]
+    ports:
+      - "2375:2375"
+
+  compiler-api:
+    build: .
+    container_name: compiler-api
+    depends_on:
+      - dind
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DOCKER_HOST=tcp://dind:2375
+    ports:
+      - "8080:8080"
