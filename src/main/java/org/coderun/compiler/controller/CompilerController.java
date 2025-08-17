@@ -3,13 +3,11 @@ package org.coderun.compiler.controller;
 import org.coderun.compiler.dto.CompileRequest;
 import org.coderun.compiler.dto.CompileResponse;
 import org.coderun.compiler.service.CompilerService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/compiler")
+@CrossOrigin(origins = "*")
 public class CompilerController {
 
     private final CompilerService service;

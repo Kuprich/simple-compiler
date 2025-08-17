@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Code Runner</title>
+    <style>
+        body, html {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          font-family: monospace;
+          overflow: hidden;
+        }
+        #toolbar {
+          height: 40px;
+          background: #333;
+          color: white;
+          display: flex;
+          align-items: center;
+          padding: 0 10px;
+        }
+       #runBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        padding: 5px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        background: #4CAF50;
+        border: none;
+        color: white;
+        border-radius: 5px;
+    }
+        #container {
+          display: flex;
+          height: calc(100vh - 40px);
+        }
+        #editor {
+          flex: 1;
+        }
+        #output {
+          flex: 1;
+          padding: 10px;
+          background: #f5f5f5;
+          overflow-y: auto;
+          white-space: pre-wrap;
+          font-family: monospace;
+          font-size: 14px;
+        }
+    </style>
+
+    <!-- Monaco loader -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs/loader.js"></script>
+</head>
+<body>
+<button id="runBtn">Run</button>
+<div id="container">
+    <div id="editor"></div>
+    <pre id="output"></pre>
+</div>
+
+<script>
+    let editor;
+    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs' }});
+    require(['vs/editor/editor.main'], function () {
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: `public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Привет, как дела?");
+    }
+}`,
+        language: 'java',
+        theme: 'vs-light',
+        automaticLayout: true
+      });
+    });
+
+    const runBtn = document.getElementById('runBtn');
+    const output = document.getElementById('output');
+
+    runBtn.addEventListener('click', async () => {
+      const code = editor.getValue();
+      output.textContent = "Выполняется...";
+
+      try {
+        const response = await fetch('http://localhost:8080/api/compiler/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: 'Hello.java', code })
+        });
+
+        if (!response.ok) {
+          output.textContent = `Ошибка запроса: ${response.status} ${response.statusText}`;
+          return;
+        }
+
+        const data = await response.json();
+        output.textContent = data.logs;
+      } catch (err) {
+        output.textContent = `Ошибка: ${err.message}`;
+      }
+    });
+</script>
+</body>
+</html>

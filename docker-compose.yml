@@ -12,7 +12,7 @@ services:
       retries: 10
     volumes:
       - dind-storage:/var/lib/docker
-      - shared-code:/code   # 👈 шарим том для исходников
+      - code-shared:/code   # общий volume для исходников
 
   compiler-api:
     build: .
@@ -21,12 +21,12 @@ services:
         condition: service_healthy
     environment:
       DOCKER_HOST: tcp://dind:2375
-      CODE_DIR: /code        # 👈 говорим API класть сюда файлы
+      CODE_DIR: /code          # говорим приложению, где писать исходники
     volumes:
-      - shared-code:/code    # 👈 тот же том подключаем сюда
+      - code-shared:/code   # монтируем тот же shared volume
     ports:
       - "8080:8080"
 
 volumes:
   dind-storage:
-  shared-code:
+  code-shared:
