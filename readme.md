@@ -56,6 +56,6 @@ The filename in the request must match the name of the public class in Java.
 - Containers are automatically cleaned up after execution.
 
 ### 🛠️ Future Improvements
-Auto-detect public class name if filename is missing.
-Support additional languages (Python, C++, etc.).
-Simple web-based UI (code editor + output window).
+- Auto-detect public class name if filename is missing.
+- Support additional languages (Python, C++, etc.).
+- Simple web-based UI (code editor + output window).
