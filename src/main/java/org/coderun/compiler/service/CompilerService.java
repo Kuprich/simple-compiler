@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.*;
 
 @Service
 public class CompilerService {
@@ -27,10 +28,11 @@ public class CompilerService {
 
     private final DockerClient docker;
     private final String hostCodeDir;
-    private final String containerCodeDir = "/code"; // путь внутри контейнера песочницы
+
+    // Execution timeout in seconds
+    private static final int TIMEOUT_SECONDS = 10;
 
     public CompilerService() {
-        // DOCKER_HOST из переменных окружения (или unix-сокет по умолчанию)
         String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
 
         var config = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -45,30 +47,31 @@ public class CompilerService {
 
         this.docker = DockerClientImpl.getInstance(config, httpClient);
 
-        // Директория для исходников — задаём через ENV (иначе /tmp/code)
+        // Directory where source code will be stored on host
         this.hostCodeDir = System.getenv().getOrDefault("CODE_DIR", "/tmp/code");
         File dir = new File(hostCodeDir);
         if (!dir.exists() && !dir.mkdirs()) {
-            throw new RuntimeException("Не удалось создать директорию " + hostCodeDir);
+            throw new RuntimeException("Failed to create directory " + hostCodeDir);
         }
-        log.info("Директория для исходников: {}", hostCodeDir);
+        log.info("Source code directory: {}", hostCodeDir);
     }
 
     public CompileResponse compileAndRun(CompileRequest request) {
         String containerId = null;
         try {
-            // сохраняем исходник в томе (общая директория)
+            // Save the source code to a file
             File javaFile = new File(hostCodeDir, request.getFilename());
             try (FileWriter writer = new FileWriter(javaFile)) {
                 writer.write(request.getCode());
             }
-            log.info("Создан файл {}", javaFile.getAbsolutePath());
+            log.info("Created file {}", javaFile.getAbsolutePath());
 
-            // гарантируем наличие образа
+            // Pull the Docker image if not present
             docker.pullImageCmd(IMAGE).start().awaitCompletion();
-            log.debug("Образ {} готов", IMAGE);
+            log.debug("Image {} is ready", IMAGE);
 
-            // создаём контейнер, монтируем shared volume
+            // Path inside the container sandbox
+            String containerCodeDir = "/code";
             String runCmd = String.format(
                     "javac %s/%s && java -cp %s %s",
                     containerCodeDir,
@@ -77,17 +80,37 @@ public class CompilerService {
                     className(request.getFilename())
             );
 
+            // Create and start the container
             CreateContainerResponse container = docker.createContainerCmd(IMAGE)
                     .withCmd("sh", "-c", runCmd)
                     .withBinds(new Bind(hostCodeDir, new Volume(containerCodeDir)))
                     .exec();
 
             containerId = container.getId();
+            final String finalContainerId = containerId;
             docker.startContainerCmd(containerId).exec();
-            docker.waitContainerCmd(containerId).start().awaitStatusCode();
 
-            // собираем логи
+            // Set up timeout mechanism
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Integer> future = executor.submit(() ->
+                    docker.waitContainerCmd(finalContainerId).start().awaitStatusCode()
+            );
+
+            int exitCode;
             StringBuilder logs = new StringBuilder();
+
+            try {
+                exitCode = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                log.warn("Execution timeout reached, stopping container {}", containerId);
+                docker.stopContainerCmd(containerId).withTimeout(1).exec();
+                exitCode = 124;  // Standard timeout exit code
+                logs.append("Execution timed out after ").append(TIMEOUT_SECONDS).append("s\n");
+            } finally {
+                executor.shutdownNow();
+            }
+
+            // Collect container logs
             docker.logContainerCmd(containerId)
                     .withStdOut(true)
                     .withStdErr(true)
@@ -98,21 +121,26 @@ public class CompilerService {
                         }
                     }).awaitCompletion();
 
-            return new CompileResponse(true, logs.toString(), containerId);
+            boolean success = exitCode == 0;
+            return new CompileResponse(success, logs.toString(), containerId);
 
         } catch (Exception e) {
-            log.error("Ошибка при компиляции/запуске: {}", e.getMessage(), e);
+            log.error("Error during compilation/execution: {}", e.getMessage(), e);
             return new CompileResponse(false, e.getMessage(), containerId);
         } finally {
+            // Clean up the container
             if (containerId != null) {
                 try {
                     docker.removeContainerCmd(containerId).withForce(true).exec();
-                    log.debug("Контейнер {} удалён", containerId);
+                    log.debug("Container {} removed", containerId);
                 } catch (Exception ignored) {}
             }
         }
     }
 
+    /**
+     * Extracts class name from filename by removing .java extension
+     */
     private String className(String filename) {
         return filename.replace(".java", "");
     }

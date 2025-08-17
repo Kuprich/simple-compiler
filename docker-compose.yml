@@ -1,32 +1,32 @@
 services:
   dind:
-    image: docker:27-dind
-    privileged: true
+    image: docker:27-dind  # Docker-in-Docker container
+    privileged: true       # Required for DinD to function
     environment:
-      DOCKER_TLS_CERTDIR: ""
-    command: [ "--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock" ]
+      DOCKER_TLS_CERTDIR: ""  # Disable TLS for simpler setup
+    command: [ "--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock" ]  # Expose Docker API
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:2375/version" ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:2375/version" ]  # Check if Docker API is ready
       interval: 2s
       timeout: 2s
       retries: 10
     volumes:
-      - dind-storage:/var/lib/docker
-      - code-shared:/code   # общий volume для исходников
+      - dind-storage:/var/lib/docker  # Persistent storage for Docker images/containers
+      - code-shared:/code             # Shared volume for source code files
 
   compiler-api:
-    build: .
+    build: .  # Build from local Dockerfile
     depends_on:
       dind:
-        condition: service_healthy
+        condition: service_healthy  # Wait until DinD is ready
     environment:
-      DOCKER_HOST: tcp://dind:2375
-      CODE_DIR: /code          # говорим приложению, где писать исходники
+      DOCKER_HOST: tcp://dind:2375  # Connect to DinD's Docker API
+      CODE_DIR: /code               # Directory where app should store source files
     volumes:
-      - code-shared:/code   # монтируем тот же shared volume
+      - code-shared:/code           # Mount the same shared volume as DinD
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Expose API port to host
 
 volumes:
-  dind-storage:
-  code-shared:
+  dind-storage:  # Persistent volume for DinD's Docker data
+  code-shared:   # Shared volume for source code exchange
