@@ -26,43 +26,67 @@ public class CompilerService {
     public static final String IMAGE = "openjdk:17";
 
     private final DockerClient docker;
+    private final String hostCodeDir;
+    private final String containerCodeDir = "/code"; // путь внутри контейнера песочницы
 
     public CompilerService() {
-        //var config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+        // DOCKER_HOST из переменных окружения (или unix-сокет по умолчанию)
+        String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+
         var config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost("tcp://localhost:2375")
+                .withDockerHost(dockerHost)
+                .withDockerTlsVerify(false)
                 .build();
+
         var httpClient = new ApacheDockerHttpClient.Builder()
                 .dockerHost(config.getDockerHost())
                 .sslConfig(config.getSSLConfig())
                 .build();
+
         this.docker = DockerClientImpl.getInstance(config, httpClient);
+
+        // Директория для исходников — задаём через ENV (иначе /tmp/code)
+        this.hostCodeDir = System.getenv().getOrDefault("CODE_DIR", "/tmp/code");
+        File dir = new File(hostCodeDir);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Не удалось создать директорию " + hostCodeDir);
+        }
+        log.info("Директория для исходников: {}", hostCodeDir);
     }
 
     public CompileResponse compileAndRun(CompileRequest request) {
         String containerId = null;
         try {
-
-            Path tempDir = Files.createTempDirectory("code");
-            File javaFile = new File(tempDir.toFile(), request.getFilename());
+            // сохраняем исходник в томе (общая директория)
+            File javaFile = new File(hostCodeDir, request.getFilename());
             try (FileWriter writer = new FileWriter(javaFile)) {
                 writer.write(request.getCode());
             }
-
             log.info("Создан файл {}", javaFile.getAbsolutePath());
 
+            // гарантируем наличие образа
             docker.pullImageCmd(IMAGE).start().awaitCompletion();
-            log.debug("Образ " + IMAGE + " готов");
+            log.debug("Образ {} готов", IMAGE);
+
+            // создаём контейнер, монтируем shared volume
+            String runCmd = String.format(
+                    "javac %s/%s && java -cp %s %s",
+                    containerCodeDir,
+                    request.getFilename(),
+                    containerCodeDir,
+                    className(request.getFilename())
+            );
 
             CreateContainerResponse container = docker.createContainerCmd(IMAGE)
-                    .withCmd("sh", "-c", "javac /code/" + request.getFilename() + " && java -cp /code " + className(request.getFilename()))
-                    .withBinds(new Bind(tempDir.toAbsolutePath().toString(), new Volume("/code")))
+                    .withCmd("sh", "-c", runCmd)
+                    .withBinds(new Bind(hostCodeDir, new Volume(containerCodeDir)))
                     .exec();
 
             containerId = container.getId();
             docker.startContainerCmd(containerId).exec();
             docker.waitContainerCmd(containerId).start().awaitStatusCode();
 
+            // собираем логи
             StringBuilder logs = new StringBuilder();
             docker.logContainerCmd(containerId)
                     .withStdOut(true)
@@ -84,8 +108,7 @@ public class CompilerService {
                 try {
                     docker.removeContainerCmd(containerId).withForce(true).exec();
                     log.debug("Контейнер {} удалён", containerId);
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
         }
     }

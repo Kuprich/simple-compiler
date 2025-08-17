@@ -1,21 +1,32 @@
 services:
   dind:
-    image: docker:24.0.5-dind
+    image: docker:27-dind
     privileged: true
-    container_name: dind
     environment:
-      - DOCKER_TLS_CERTDIR=    # отключаем TLS для простоты
-    command: ["--host=tcp://0.0.0.0:2375", "--storage-driver=vfs"]
-    ports:
-      - "2375:2375"
+      DOCKER_TLS_CERTDIR: ""
+    command: [ "--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock" ]
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:2375/version" ]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    volumes:
+      - dind-storage:/var/lib/docker
+      - shared-code:/code   # 👈 шарим том для исходников
 
   compiler-api:
     build: .
-    container_name: compiler-api
     depends_on:
-      - dind
+      dind:
+        condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - DOCKER_HOST=tcp://dind:2375
+      DOCKER_HOST: tcp://dind:2375
+      CODE_DIR: /code        # 👈 говорим API класть сюда файлы
+    volumes:
+      - shared-code:/code    # 👈 тот же том подключаем сюда
     ports:
       - "8080:8080"
+
+volumes:
+  dind-storage:
+  shared-code:
