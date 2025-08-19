@@ -6,46 +6,35 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Volume;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientImpl;
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import org.coderun.compiler.dto.CompileRequest;
 import org.coderun.compiler.dto.CompileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.*;
 
 @Service
 public class CompilerService {
     private static final Logger log = LoggerFactory.getLogger(CompilerService.class);
-    public static final String IMAGE = "openjdk:17";
 
-    private final DockerClient docker;
+    @Value("${compiler.java.image}")
+    private String image;
+
+    @Value("${compiler.timeout.seconds}")
+    private int timeoutSeconds;
+
+    @Autowired
+    private DockerClient docker;
+
     private final String hostCodeDir;
 
-    // Execution timeout in seconds
-    private static final int TIMEOUT_SECONDS = 10;
 
     public CompilerService() {
-        String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
-
-        var config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost(dockerHost)
-                .withDockerTlsVerify(false)
-                .build();
-
-        var httpClient = new ApacheDockerHttpClient.Builder()
-                .dockerHost(config.getDockerHost())
-                .sslConfig(config.getSSLConfig())
-                .build();
-
-        this.docker = DockerClientImpl.getInstance(config, httpClient);
 
         // Directory where source code will be stored on host
         this.hostCodeDir = System.getenv().getOrDefault("CODE_DIR", "/tmp/code");
@@ -67,8 +56,8 @@ public class CompilerService {
             log.info("Created file {}", javaFile.getAbsolutePath());
 
             // Pull the Docker image if not present
-            docker.pullImageCmd(IMAGE).start().awaitCompletion();
-            log.debug("Image {} is ready", IMAGE);
+            docker.pullImageCmd(image).start().awaitCompletion();
+            log.debug("Image {} is ready", image);
 
             // Path inside the container sandbox
             String containerCodeDir = "/code";
@@ -81,7 +70,7 @@ public class CompilerService {
             );
 
             // Create and start the container
-            CreateContainerResponse container = docker.createContainerCmd(IMAGE)
+            CreateContainerResponse container = docker.createContainerCmd(image)
                     .withCmd("sh", "-c", runCmd)
                     .withBinds(new Bind(hostCodeDir, new Volume(containerCodeDir)))
                     .exec();
@@ -100,12 +89,12 @@ public class CompilerService {
             StringBuilder logs = new StringBuilder();
 
             try {
-                exitCode = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                exitCode = future.get(timeoutSeconds, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
                 log.warn("Execution timeout reached, stopping container {}", containerId);
                 docker.stopContainerCmd(containerId).withTimeout(1).exec();
                 exitCode = 124;  // Standard timeout exit code
-                logs.append("Execution timed out after ").append(TIMEOUT_SECONDS).append("s\n");
+                logs.append("Execution timed out after ").append(timeoutSeconds).append("s\n");
             } finally {
                 executor.shutdownNow();
             }

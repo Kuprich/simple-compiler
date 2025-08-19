@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: compiler
+
+compiler:
+  timeout:
+    seconds: 20
+  java:
+    image: openjdk:17
+
+
