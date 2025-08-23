@@ -1,136 +1,96 @@
 package org.coderun.compiler.service;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.api.model.Volume;
+import lombok.extern.slf4j.Slf4j;
 import org.coderun.compiler.dto.CompileRequest;
 import org.coderun.compiler.dto.CompileResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @Service
+@Slf4j
 public class CompilerService {
-    private static final Logger log = LoggerFactory.getLogger(CompilerService.class);
+
+    private static final int TIMEOUT_EXIT_CODE = 124;
 
     @Value("${compiler.java.image}")
-    private String image;
+    private String dockerImage;
 
     @Value("${compiler.timeout.seconds}")
     private int timeoutSeconds;
 
     @Autowired
-    private DockerClient docker;
+    private FileService fileService;
 
-    private final String hostCodeDir;
+    @Autowired
+    private DockerService dockerService;
 
-
-    public CompilerService() {
-
-        // Directory where source code will be stored on host
-        this.hostCodeDir = System.getenv().getOrDefault("CODE_DIR", "/tmp/code");
-        File dir = new File(hostCodeDir);
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new RuntimeException("Failed to create directory " + hostCodeDir);
-        }
-        log.info("Source code directory: {}", hostCodeDir);
-    }
+    @Autowired
+    private CommandBuilderService commandBuilder;
 
     public CompileResponse compileAndRun(CompileRequest request) {
         String containerId = null;
         try {
-            // Save the source code to a file
-            File javaFile = new File(hostCodeDir, request.getFilename());
-            try (FileWriter writer = new FileWriter(javaFile)) {
-                writer.write(request.getCode());
-            }
-            log.info("Created file {}", javaFile.getAbsolutePath());
+            // 1. Сохраняем код в файл
+            fileService.saveSourceCode(request.getFilename(), request.getCode());
 
-            // Pull the Docker image if not present
-            docker.pullImageCmd(image).start().awaitCompletion();
-            log.debug("Image {} is ready", image);
+            // 2. Подготавливаем Docker образ
+            dockerService.pullImageIfNeeded(dockerImage);
 
-            // Path inside the container sandbox
-            String containerCodeDir = "/code";
-            String runCmd = String.format(
-                    "javac %s/%s && java -cp %s %s",
-                    containerCodeDir,
-                    request.getFilename(),
-                    containerCodeDir,
-                    className(request.getFilename())
-            );
+            // 3. Создаем и запускаем контейнер
+            String command = commandBuilder.buildJavaCompileAndRunCommand(request.getFilename());
+            Bind bind = commandBuilder.createBind(fileService.getHostCodeDir());
+            containerId = dockerService.createAndStartContainer(dockerImage, command, bind);
 
-            // Create and start the container
-            CreateContainerResponse container = docker.createContainerCmd(image)
-                    .withCmd("sh", "-c", runCmd)
-                    .withBinds(new Bind(hostCodeDir, new Volume(containerCodeDir)))
-                    .exec();
+            // 4. Выполняем с таймаутом
+            ContainerExecutionResult result = executeWithTimeout(containerId);
 
-            containerId = container.getId();
-            final String finalContainerId = containerId;
-            docker.startContainerCmd(containerId).exec();
+            // 5. Собираем логи (теперь это делается в DockerService)
+            String containerLogs = dockerService.getContainerLogs(containerId);
+            String allLogs = result.logs() + containerLogs;
 
-            // Set up timeout mechanism
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<Integer> future = executor.submit(() ->
-                    docker.waitContainerCmd(finalContainerId).start().awaitStatusCode()
-            );
-
-            int exitCode;
-            StringBuilder logs = new StringBuilder();
-
-            try {
-                exitCode = future.get(timeoutSeconds, TimeUnit.SECONDS);
-            } catch (TimeoutException e) {
-                log.warn("Execution timeout reached, stopping container {}", containerId);
-                docker.stopContainerCmd(containerId).withTimeout(1).exec();
-                exitCode = 124;  // Standard timeout exit code
-                logs.append("Execution timed out after ").append(timeoutSeconds).append("s\n");
-            } finally {
-                executor.shutdownNow();
-            }
-
-            // Collect container logs
-            docker.logContainerCmd(containerId)
-                    .withStdOut(true)
-                    .withStdErr(true)
-                    .exec(new ResultCallback.Adapter<Frame>() {
-                        @Override
-                        public void onNext(Frame frame) {
-                            logs.append(new String(frame.getPayload()));
-                        }
-                    }).awaitCompletion();
-
-            boolean success = exitCode == 0;
-            return new CompileResponse(success, logs.toString(), containerId);
+            return new CompileResponse(result.exitCode() == 0, allLogs, containerId);
 
         } catch (Exception e) {
-            log.error("Error during compilation/execution: {}", e.getMessage(), e);
-            return new CompileResponse(false, e.getMessage(), containerId);
+            log.error("Compilation failed for request: {}", request, e);
+            return new CompileResponse(false, "Error: " + e.getMessage(), containerId);
         } finally {
-            // Clean up the container
-            if (containerId != null) {
-                try {
-                    docker.removeContainerCmd(containerId).withForce(true).exec();
-                    log.debug("Container {} removed", containerId);
-                } catch (Exception ignored) {}
-            }
+            cleanupContainer(containerId);
         }
     }
 
-    /**
-     * Extracts class name from filename by removing .java extension
-     */
-    private String className(String filename) {
-        return filename.replace(".java", "");
+    private ContainerExecutionResult executeWithTimeout(String containerId) {
+        StringBuilder timeoutLogs = new StringBuilder();
+        int exitCode;
+
+        try {
+            exitCode = dockerService.waitForContainer(containerId, timeoutSeconds);
+        } catch (TimeoutException e) {
+            log.warn("Timeout for container {}", containerId);
+            dockerService.stopContainer(containerId);
+            timeoutLogs.append("Execution timed out after ").append(timeoutSeconds).append("s\n");
+            exitCode = TIMEOUT_EXIT_CODE;
+        } catch (InterruptedException e) {
+            log.error("Container execution interrupted: {}", containerId, e);
+            Thread.currentThread().interrupt();
+            exitCode = 1;
+        } catch (ExecutionException e) {
+            log.error("Container execution failed: {}", containerId, e);
+            exitCode = 1;
+        }
+
+        return new ContainerExecutionResult(exitCode, timeoutLogs.toString());
     }
+
+    private void cleanupContainer(String containerId) {
+        if (containerId != null) {
+            dockerService.removeContainer(containerId);
+        }
+    }
+
+    private record ContainerExecutionResult(int exitCode, String logs) {}
 }
