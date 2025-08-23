@@ -41,8 +41,27 @@ Then run:
 ```bash
 docker compose up --build
 ```
-The API will be available at: <br>
-👉 http://localhost:8080/api/compiler/run
+### 📖 API Documentation
+
+#### Swagger/OpenAPI Support
+
+The API includes automatic **Swagger documentation** powered by Springdoc OpenAPI.
+
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8080/api-docs
+
+#### Features available in Swagger UI:
+- Interactive API documentation
+- Try-it-out functionality for testing endpoints
+- Schema definitions for all request/response objects
+- Detailed parameter descriptions and examples
+
+#### Example documented endpoints:
+- `POST /api/compiler/run` - Compile and execute Java code
+- Health check endpoints
+- Error response schemas
+
+You can test the API directly from the Swagger UI interface without needing external tools like Postman.
 
 ### 📂 Project Structure
 - compiler-api → Spring Boot service that exposes REST API and handles compilation requests

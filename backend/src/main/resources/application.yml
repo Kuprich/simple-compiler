@@ -8,6 +8,18 @@ compiler:
   java:
     image: openjdk:17
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+  show-actuator: true
+  default-produces-media-type: application/json
+
 
 
 
