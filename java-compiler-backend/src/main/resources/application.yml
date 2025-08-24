@@ -7,6 +7,9 @@ compiler:
     seconds: 20
   java:
     image: openjdk:17
+  host:
+    code:
+      dir: /code
 
 springdoc:
   api-docs:
