@@ -41,9 +41,9 @@ import { ref } from 'vue'
 
 // Определяем интерфейс для ответа API (адаптируйте под ваш реальный ответ)
 interface CompilerResponse {
-  output?: string
-  error?: string
   success?: boolean
+  logs?: string
+  containerId?: string
   // Добавьте другие поля, которые возвращает ваш API
 }
 
@@ -81,10 +81,10 @@ async function runCode(): Promise<void> {
     const data: CompilerResponse = await response.json()
 
     // Обрабатываем разные возможные форматы ответа
-    if (data.output) {
-      result.value = data.output
-    } else if (data.error) {
-      result.value = `Ошибка: ${data.error}`
+    if (data.logs) {
+      result.value = data.logs
+    } else if (data.success == false) {
+      result.value = `Ошибка: ${data.containerId}`
     } else {
       result.value = 'Компиляция завершена успешно (нет вывода)'
     }
