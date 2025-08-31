@@ -35,21 +35,21 @@ public class CompilerService {
     public CompileResponse compileAndRun(CompileRequest request) {
         String containerId = null;
         try {
-            // 1. Сохраняем код в файл
+            // 1. Save code to file
             fileService.saveSourceCode(request.getFilename(), request.getCode());
 
-            // 2. Подготавливаем Docker образ
+            // 2. Prepare Docker image
             dockerService.pullImageIfNeeded(dockerImage);
 
-            // 3. Создаем и запускаем контейнер
+            // 3. Create and run docker image
             String command = commandBuilder.buildJavaCompileAndRunCommand(request.getFilename());
             Bind bind = commandBuilder.createBind(fileService.getHostCodeDir());
             containerId = dockerService.createAndStartContainer(dockerImage, command, bind);
 
-            // 4. Выполняем с таймаутом
+            // 4. Run with timeout
             ContainerExecutionResult result = executeWithTimeout(containerId);
 
-            // 5. Собираем логи (теперь это делается в DockerService)
+            // 5. Collect logs (using DockerService)
             String containerLogs = dockerService.getContainerLogs(containerId);
             String allLogs = result.logs() + containerLogs;
 

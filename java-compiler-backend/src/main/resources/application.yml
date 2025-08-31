@@ -7,9 +7,6 @@ compiler:
     seconds: 20
   java:
     image: openjdk:17
-  host:
-    code:
-      dir: /code
 
 springdoc:
   api-docs:
@@ -22,6 +19,14 @@ springdoc:
     display-request-duration: true
   show-actuator: true
   default-produces-media-type: application/json
+
+logging:
+  level:
+    org:
+      coderun:
+        compiler:
+          service:
+            FileService: DEBUG
 
 
 
