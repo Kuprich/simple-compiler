@@ -2,13 +2,15 @@
   <div class="compiler-container">
     <CompilerHeader />
 
-    <div class="panels-container">
-      <!-- Левая панель с редактором кода -->
-      <CodeEditorPanel v-model:code="code" v-model:filename="filename" @run="handleRunCode" />
+    <PanelsLayout>
+      <template #left>
+        <CodeEditorPanel v-model:code="code" v-model:filename="filename" @run="handleRunCode" />
+      </template>
 
-      <!-- Правая панель с результатом -->
-      <ResultPanel :result="result" :loading="loading" />
-    </div>
+      <template #right>
+        <ResultPanel :result="result" :loading="loading" />
+      </template>
+    </PanelsLayout>
   </div>
 </template>
 
@@ -18,6 +20,7 @@ import CompilerHeader from './components/CompilerHeader.vue'
 import CodeEditorPanel from './components/CodeEditorPanel.vue'
 import ResultPanel from './components/ResultPanel.vue'
 import { useCompiler } from './composables/useCompiler'
+import PanelsLayout from './components/layout/PanelsLayout.vue'
 
 // Данные компонента
 const filename = ref<string>('Hello.java')
@@ -34,7 +37,7 @@ const { result, loading, runCode } = useCompiler()
 const handleRunCode = async () => {
   await runCode({
     filename: filename.value,
-    code: code.value
+    code: code.value,
   })
 }
 </script>
@@ -42,20 +45,6 @@ const handleRunCode = async () => {
 <style scoped>
 .compiler-container {
   padding: 20px;
-  max-width: 1200px;
   margin: 0 auto;
-}
-
-.panels-container {
-  display: flex;
-  gap: 20px;
-  height: 70vh;
-}
-
-@media (max-width: 768px) {
-  .panels-container {
-    flex-direction: column;
-    height: auto;
-  }
 }
 </style>

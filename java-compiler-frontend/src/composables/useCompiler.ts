@@ -1,15 +1,6 @@
+import type { CompilerResponse, RunCodeParams } from '@/types/compiler'
+import { extractClassName } from '@/utils/javaParser'
 import { ref } from 'vue'
-
-interface CompilerResponse {
-  success?: boolean
-  logs?: string
-  containerId?: string
-}
-
-interface RunCodeParams {
-  filename: string
-  code: string
-}
 
 export function useCompiler() {
   const result = ref<string>('')
@@ -20,6 +11,16 @@ export function useCompiler() {
     result.value = ''
 
     try {
+
+      const validation = extractClassName(params.code)
+      if (validation.error) {
+        result.value = `Ошибка: ${validation.error}`
+        loading.value = false
+        return
+      }
+
+      params.filename = validation.filename
+
       const response = await fetch('http://localhost:8080/api/compiler/run', {
         method: 'POST',
         headers: {
@@ -41,10 +42,10 @@ export function useCompiler() {
       } else {
         result.value = 'Компиляция завершена успешно (нет вывода)'
       }
-    } catch (error: unknown) {
-      console.error('Ошибка:', error)
-      if (error instanceof Error) {
-        result.value = `Ошибка: ${error.message}`
+    } catch (ex: unknown) {
+      console.error('Ошибка:', ex)
+      if (ex instanceof Error) {
+        result.value = `Ошибка: ${ex.message}`
       } else {
         result.value = 'Неизвестная ошибка'
       }
@@ -56,6 +57,6 @@ export function useCompiler() {
   return {
     result,
     loading,
-    runCode
+    runCode,
   }
 }

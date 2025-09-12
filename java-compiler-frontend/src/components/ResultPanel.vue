@@ -1,9 +1,9 @@
 <template>
   <div class="result-panel">
-    <h2>Результат</h2>
-    <div v-if="loading" class="loading">Компиляция...</div>
+    <h2>Result</h2>
+    <div v-if="loading" class="loading">Compilation...</div>
     <div v-else-if="result" class="result-output">{{ result }}</div>
-    <div v-else class="placeholder">Результат выполнения появится здесь</div>
+    <div v-else class="placeholder">The execution result will appear here</div>
   </div>
 </template>
 
