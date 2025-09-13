@@ -1,24 +1,33 @@
 <template>
   <div class="editor-panel">
     <h2>Source code</h2>
-    <BaseTextarea :modelValue="code" placeholder="Введите ваш Java-код здесь..." class="code-editor" />
+    <CodeEditor
+      :modelValue="code"
+      @update:modelValue="$emit('update:code', $event)"
+      class="code-editor"
+    />
 
     <div class="controls">
-      <BaseButton @click="$emit('run')" class="run-button">Run</BaseButton>
+
+      <BaseButton @click="$emit('run')" class="run-button">
+        Run
+      </BaseButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import BaseTextarea from './ui/BaseTextarea.vue';
+import CodeEditor from './ui/CodeEditor.vue'
 import BaseButton from './ui/BaseButton.vue'
 
 defineProps<{
   code: string
+  filename: string
 }>()
 
 defineEmits<{
   'update:code': [value: string]
+  'update:filename': [value: string]
   run: []
 }>()
 </script>
@@ -29,7 +38,6 @@ defineEmits<{
   display: flex;
   flex-direction: column;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
   overflow: hidden;
   background-color: #f6f8fa;
 }
@@ -44,8 +52,6 @@ h2 {
 
 .code-editor {
   flex: 1;
-  border: none;
-  border-radius: 0;
 }
 
 .controls {

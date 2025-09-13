@@ -16,8 +16,14 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@codemirror/lang-java": "^6.0.2",
+    "@codemirror/language": "^6.11.3",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.2",
+    "codemirror": "^6.0.2",
     "pinia": "^3.0.3",
     "vue": "^3.5.18",
+    "vue-codemirror": "^6.1.1",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
