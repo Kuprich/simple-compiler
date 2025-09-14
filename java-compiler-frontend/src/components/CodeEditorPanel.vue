@@ -1,24 +1,27 @@
 <template>
   <div class="editor-panel">
-    <h2>Source code</h2>
+    <h2 class="editor-header">
+      Source code
+      <div class="controls">
+        <span class="header-info">Java • JDK-17.0</span>
+        <BaseButton @click="$emit('run')" class="run-button">
+          <FontAwesomeIcon icon="fa-solid fa-play" />
+          Run</BaseButton>
+      </div>
+    </h2>
+
     <CodeEditor
       :modelValue="code"
       @update:modelValue="$emit('update:code', $event)"
       class="code-editor"
     />
-
-    <div class="controls">
-
-      <BaseButton @click="$emit('run')" class="run-button">
-        Run
-      </BaseButton>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import CodeEditor from './ui/CodeEditor.vue'
 import BaseButton from './ui/BaseButton.vue'
+
 
 defineProps<{
   code: string
@@ -37,12 +40,18 @@ defineEmits<{
   flex: 1;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
   overflow: hidden;
   background-color: #f6f8fa;
+  border-right: 1px solid #2c3e50;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
 }
 
 h2 {
+  border-right: 1px solid #f6f8fa;
   background-color: #2c3e50;
   color: white;
   margin: 0;
@@ -54,17 +63,25 @@ h2 {
   flex: 1;
 }
 
-.controls {
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  gap: 10px;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
-}
-
 .filename-input {
   flex: 1;
+}
+
+.editor-header {
+  background-color: #2c3e50;
+  color: white;
+  margin: 0;
+  padding: 15px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+}
+
+.header-info {
+  font-size: 14px;
+  opacity: 0.8;
+  padding: 0 20px;
 }
 </style>

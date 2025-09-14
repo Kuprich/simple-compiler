@@ -15,10 +15,10 @@
 <script setup lang="ts"></script>
 
 <style scoped>
+
 .panels-layout {
   display: flex;
-  gap: 20px;
-  height: 70vh;
+  height: 100vh;
 }
 
 .left-panel,

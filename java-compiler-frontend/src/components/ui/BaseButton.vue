@@ -24,7 +24,8 @@ defineEmits<{
 
 <style scoped>
 .base-button {
-  padding: 8px 16px;
+  padding: 5px 16px;
+  margin: -5px 0;
   background-color: #42b883;
   color: white;
   border: none;

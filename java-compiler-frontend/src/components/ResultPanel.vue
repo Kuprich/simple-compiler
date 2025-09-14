@@ -19,7 +19,6 @@ defineProps<{
   flex: 1;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
   overflow: hidden;
   background-color: #f9f9f9;
 }
@@ -30,6 +29,7 @@ h2 {
   margin: 0;
   padding: 15px;
   font-size: 18px;
+  font-family: monospace;
 }
 
 .result-output,

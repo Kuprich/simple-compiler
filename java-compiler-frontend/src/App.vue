@@ -1,6 +1,5 @@
 <template>
   <div class="compiler-container">
-    <CompilerHeader />
 
     <PanelsLayout>
       <template #left>
@@ -16,7 +15,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import CompilerHeader from './components/CompilerHeader.vue'
 import CodeEditorPanel from './components/CodeEditorPanel.vue'
 import ResultPanel from './components/ResultPanel.vue'
 import { useCompiler } from './composables/useCompiler'
@@ -42,9 +40,3 @@ const handleRunCode = async () => {
 }
 </script>
 
-<style scoped>
-.compiler-container {
-  padding: 20px;
-  margin: 0 auto;
-}
-</style>
