@@ -18,7 +18,10 @@
 
 .panels-layout {
   display: flex;
+  flex: 1;
+  align-items: stretch;
   height: 100vh;
+  overflow-y: scroll;
 }
 
 .left-panel,

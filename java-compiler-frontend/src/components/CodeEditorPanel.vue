@@ -15,6 +15,7 @@
       @update:modelValue="$emit('update:code', $event)"
       class="code-editor"
     />
+
   </div>
 </template>
 
@@ -35,7 +36,17 @@ defineEmits<{
 }>()
 </script>
 
+<style>
+.cm-editor {
+  overflow: hidden;
+}
+.cm-scroller {
+  overflow: auto;
+}
+</style>
+
 <style scoped>
+
 .editor-panel {
   flex: 1;
   display: flex;
@@ -43,28 +54,6 @@ defineEmits<{
   overflow: hidden;
   background-color: #f6f8fa;
   border-right: 1px solid #2c3e50;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-}
-
-h2 {
-  border-right: 1px solid #f6f8fa;
-  background-color: #2c3e50;
-  color: white;
-  margin: 0;
-  padding: 15px;
-  font-size: 18px;
-}
-
-.code-editor {
-  flex: 1;
-}
-
-.filename-input {
-  flex: 1;
 }
 
 .editor-header {
@@ -84,4 +73,18 @@ h2 {
   opacity: 0.8;
   padding: 0 20px;
 }
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.code-editor {
+  flex: 1;
+}
+
+.filename-input {
+  flex: 1;
+}
+
 </style>
