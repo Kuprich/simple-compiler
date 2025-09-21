@@ -1,42 +1,42 @@
-<template>
-  <div class="compiler-container">
-
-    <PanelsLayout>
-      <template #left>
-        <CodeEditorPanel v-model:code="code" v-model:filename="filename" @run="handleRunCode" />
-      </template>
-
-      <template #right>
-        <ResultPanel :result="result" :loading="loading" />
-      </template>
-    </PanelsLayout>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
-import CodeEditorPanel from './components/CodeEditorPanel.vue'
-import ResultPanel from './components/ResultPanel.vue'
-import { useCompiler } from './composables/useCompiler'
-import PanelsLayout from './components/layout/PanelsLayout.vue'
+import EditorPanel from './components/EditorPanel.vue'
+import OutputPanel from './components/OutputPanel.vue'
+import { useCompileAndRun } from './composables/useCompileAndRun'
 
-// Данные компонента
-const filename = ref<string>('Hello.java')
-const code = ref<string>(`public class Hello {
-  public static void main(String[] args) {
-    System.out.println("Hello from Java!");
-  }
-}`)
+const outputValue = ref('')
 
-// composable для логики компилятора
-const { result, loading, runCode } = useCompiler()
+const { result, isCompiling, runCode } = useCompileAndRun()
 
-// ф-я запуска кода
-const handleRunCode = async () => {
-  await runCode({
-    filename: filename.value,
-    code: code.value,
-  })
+const handleRun = async (code: string, filename: string) => {
+  outputValue.value = ''
+  await runCode({ code, filename })
+  outputValue.value = result.value
 }
 </script>
 
+<template>
+  <div class="wrapper">
+    <Splitter layout="vertical" class="splitter">
+      <SplitterPanel class="pane1" :size="75" :minSize="25">
+        <EditorPanel @run="handleRun" />
+      </SplitterPanel>
+      <SplitterPanel :size="25" :minSize="25">
+        <OutputPanel :outputValue :isCompiling />
+      </SplitterPanel>
+    </Splitter>
+  </div>
+</template>
+
+<style scoped>
+.wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.splitter {
+  display: flex;
+  flex: 1;
+  border: none;
+}
+</style>

@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+body {
+  font-family: 'Inter';
+  font-optical-sizing: auto;
+  margin: 0;
+}
+
+.cm-editor {
+  height: 100%;
+  width: 100%;
+}
+
+.p-tabpanels {
+  display: flex;
+  flex: 1;
+}
+
+.p-tabs,
+.p-tabpanel {
+  height: 100%;
+  width: 100%;
+}
+
+.p-tabpanels {
+  overflow: hidden;
+}
+
+.p-splitter-gutter-handle[data-p='vertical'] {
+  height: 1px !important;
+}
+
+.p-splitter-gutter {
+  transition: 0.3s;
+  box-shadow: 0px 0px 0px 0px var(--p-primary-color);
+  border: none;
+}
+
+.p-splitter-gutter:hover {
+  background-color: var(--p-primary-color);
+  box-shadow: 0px 0px 0px 1px var(--p-primary-color);
+}
+
+.p-splitterpanel {
+  overflow: hidden;
+}

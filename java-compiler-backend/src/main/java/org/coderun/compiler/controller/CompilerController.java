@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/compiler")
 @CrossOrigin(origins = "*")
-@Tag(name = "Compiler", description = "Java code compilation and execution API")
 public class CompilerController {
 
     private final CompilerService service;
