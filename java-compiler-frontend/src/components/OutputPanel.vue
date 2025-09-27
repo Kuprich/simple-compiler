@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{ outputValue: string; isCompiling: boolean }>()
+import type { CompilerResponse } from '@/types/compiler';
+
+defineProps<{ compilerResponse: CompilerResponse; isCompiling: boolean }>()
 </script>
 
 <template>
@@ -9,7 +11,7 @@ defineProps<{ outputValue: string; isCompiling: boolean }>()
 
   <div v-else class="outputWrapper h-full flex overflow-auto">
     <div class="flex flex-1 p-2">
-      <pre class="text-sm">{{ outputValue }}</pre>
+      <pre class="text-sm">{{ compilerResponse.logs }}</pre>
     </div>
   </div>
 </template>

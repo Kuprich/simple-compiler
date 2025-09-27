@@ -2,12 +2,17 @@ import type { CompilerResponse, RunCodeParams } from '@/types/compiler'
 import { ref } from 'vue'
 
 export function useCompileAndRun() {
-  const result = ref<string>('')
+
+  const compilerResponse = ref<CompilerResponse>({
+    success: false,
+    logs: '',
+    containerId: '',
+  })
+
   const isCompiling = ref(false)
 
   async function runCode(params: RunCodeParams) {
     isCompiling.value = true
-    result.value = ''
 
     try {
       const response = await fetch('http://localhost:8080/api/compiler/run', {
@@ -17,23 +22,27 @@ export function useCompileAndRun() {
       })
 
       if (!response.ok) {
-        result.value = `ServerError: ${response.status}`
+        compilerResponse.value.logs = `ServerError: ${response.status}`
         return
       }
 
       const data: CompilerResponse = await response.json()
 
-      result.value =
-        data.logs ??
-        (data.success === false
-          ? `Error: ${data.containerId}`
-          : 'Compilation completed successfully')
+      if (data.success) {
+        compilerResponse.value.logs = data.logs || 'Compilation completed successfully'
+      } else {
+        compilerResponse.value.logs = data.logs || `Error: ${data.containerId}`
+      }
+
+      compilerResponse.value.success = data.success
+      compilerResponse.value.containerId = data.containerId
+
     } catch (ex) {
-      result.value = ex instanceof Error ? `Error: ${ex.message}` : 'Unknown error'
+      compilerResponse.value.logs = ex instanceof Error ? `Error: ${ex.message}` : 'Unknown error'
     } finally {
       isCompiling.value = false
     }
   }
 
-  return { result, isCompiling, runCode }
+  return { compilerResponse, isCompiling, runCode }
 }

@@ -1,7 +1,7 @@
 export interface CompilerResponse {
-  success?: boolean
-  logs?: string
-  containerId?: string
+  success: boolean
+  logs: string
+  containerId: string
 }
 
 export interface RunCodeParams {

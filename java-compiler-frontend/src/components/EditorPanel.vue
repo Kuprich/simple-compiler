@@ -1,14 +1,37 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import CodeEditor from './CodeEditor.vue'
+import { PrimeIcons } from '@primevue/core/api'
+
+defineProps<{ isCompiling: boolean }>()
+
+const runIcon = PrimeIcons.PLAY
+
+const code = ref(`public class Main {
+    public static void main(String[] args) {
+      for (int i = 0; i < 5; i++)
+        System.out.println("Hello, World!");
+    }
+}`)
+
+const className = 'Main.java'
+
+defineEmits<{
+  run: [code: string, className: string]
+}>()
+</script>
+
 <template>
   <Tabs value="0" class="tabs">
     <TabList>
       <div class="my-tabs">
         <div>
           <Tab value="0" class="text-sm">Main.java</Tab>
-          <Tab value="1" class="text-sm">Test.java</Tab>
         </div>
         <div class="controls">
           <Button
             :icon="runIcon"
+            :disabled="isCompiling"
             severity="success"
             variant="text"
             @click="$emit('run', code, className)"
@@ -23,26 +46,6 @@
     </TabPanels>
   </Tabs>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import CodeEditor from './CodeEditor.vue'
-import { PrimeIcons } from '@primevue/core/api'
-
-const runIcon = PrimeIcons.PLAY
-
-const code = ref(`public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}`)
-
-const className = 'Main.java'
-
-defineEmits<{
-  run: [code: string, className: string]
-}>()
-</script>
 
 <style scoped>
 .tabs {

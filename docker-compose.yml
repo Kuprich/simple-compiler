@@ -1,6 +1,7 @@
 services:
   dind:
-    image: docker:27-dind  # Docker-in-Docker container
+    container_name: dind
+    image: docker:dind  # Docker-in-Docker container
     privileged: true       # Required for DinD to function
     environment:
       DOCKER_TLS_CERTDIR: ""  # Disable TLS for simpler setup
@@ -15,7 +16,8 @@ services:
       - code-shared:/code             # Shared volume for source code files
 
   compiler-api:
-    build: .  # Build from local Dockerfile
+    container_name: compiler-api
+    build: ./java-compiler-backend/  # Build from local Dockerfile
     depends_on:
       dind:
         condition: service_healthy  # Wait until DinD is ready
@@ -26,6 +28,14 @@ services:
       - code-shared:/code           # Mount the same shared volume as DinD
     ports:
       - "8080:8080"  # Expose API port to host
+  compiler-app:
+    container_name: compiler-app
+    build: ./java-compiler-frontend/
+    depends_on:
+      compiler-api:
+        condition: service_started
+    ports:
+      - "5174:80" 
 
 volumes:
   dind-storage:  # Persistent volume for DinD's Docker data
