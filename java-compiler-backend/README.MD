@@ -1,13 +1,13 @@
-# Java Compiler API
+## Java Compiler API
 
 A simple REST API that compiles and runs Java code inside Docker containers.  
 It uses **Spring Boot** together with **Docker-in-Docker (DinD)** to safely execute untrusted code.
 
 ---
 
-## 📌 API Endpoints
+#### 📌 API Endpoints
 
-### `POST /api/compiler/run`
+`POST /api/compiler/run`
 
 Compile and execute Java code inside an isolated container.
 
@@ -23,7 +23,6 @@ Content-Type: application/json
 ```
 Response Example
 ```json
-
 {
   "success": true,
   "logs": "Hello from Dockerized compiler!\n",
@@ -34,14 +33,14 @@ Response Example
 - logs → stdout/stderr output from the program.
 - containerId → ID of the temporary container used for compilation.
 
-### 🚀 Run Locally with Docker Compose
+#### 🚀 Run Locally with Docker Compose
 Make sure you have Docker and Docker Compose installed.
 Then run:
 
 ```bash
 docker compose up --build
 ```
-### 📖 API Documentation
+#### 📖 API Documentation
 
 #### Swagger/OpenAPI Support
 
@@ -63,18 +62,17 @@ The API includes automatic **Swagger documentation** powered by Springdoc OpenAP
 
 You can test the API directly from the Swagger UI interface without needing external tools like Postman.
 
-### 📂 Project Structure
+#### 📂 Project Structure
 - compiler-api → Spring Boot service that exposes REST API and handles compilation requests
 - dind → Docker-in-Docker service used to run containers securely and isolate code execution
 
-### ⚠️ Notes
+#### ⚠️ Notes
 The filename in the request must match the name of the public class in Java.
 
 - Example: Hello.java → public class Hello
 - Temporary source files are created inside a shared /code volume between API and DinD.
 - Containers are automatically cleaned up after execution.
 
-### 🛠️ Future Improvements
-- Auto-detect public class name if filename is missing.
+#### 🛠️ Future Improvements
+- Multifile support
 - Support additional languages (Python, C++, etc.).
-- Simple web-based UI (code editor + output window).
