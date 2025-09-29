@@ -6,6 +6,7 @@ import { PrimeIcons } from '@primevue/core/api'
 defineProps<{ isCompiling: boolean }>()
 
 const runIcon = PrimeIcons.PLAY
+const stopIcon = PrimeIcons.STOP
 
 const code = ref(`public class Main {
     public static void main(String[] args) {
@@ -18,6 +19,7 @@ const className = 'Main.java'
 
 defineEmits<{
   run: [code: string, className: string]
+  stop: []
 }>()
 </script>
 
@@ -35,6 +37,13 @@ defineEmits<{
             severity="success"
             variant="text"
             @click="$emit('run', code, className)"
+          />
+          <Button
+            :icon="stopIcon"
+            :disabled="!isCompiling"
+            severity="danger"
+            variant="text"
+            @click="$emit('stop')"
           />
         </div>
       </div>

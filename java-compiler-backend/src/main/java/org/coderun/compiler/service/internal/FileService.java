@@ -1,4 +1,4 @@
-package org.coderun.compiler.service;
+package org.coderun.compiler.service.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

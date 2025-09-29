@@ -2,20 +2,22 @@ package org.coderun.compiler.service;
 
 import com.github.dockerjava.api.model.Bind;
 import lombok.extern.slf4j.Slf4j;
-import org.coderun.compiler.dto.CompileRequest;
-import org.coderun.compiler.dto.CompileResponse;
+import org.coderun.compiler.dto.request.CompileRequest;
+import org.coderun.compiler.dto.response.CompileResponse;
+import org.coderun.compiler.dto.request.StopExecutionRequest;
+import org.coderun.compiler.service.internal.CommandBuilderService;
+import org.coderun.compiler.service.internal.DockerService;
+import org.coderun.compiler.service.internal.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Executors;
 
 @Service
 @Slf4j
 public class CompilerService {
-
-    private static final int TIMEOUT_EXIT_CODE = 124;
 
     @Value("${compiler.java.image}")
     private String dockerImage;
@@ -47,13 +49,12 @@ public class CompilerService {
             containerId = dockerService.createAndStartContainer(dockerImage, command, bind);
 
             // 4. Run with timeout
-            ContainerExecutionResult result = executeWithTimeout(containerId);
+            int executionStatusCode = executeWithTimeout(containerId);
 
             // 5. Collect logs (using DockerService)
             String containerLogs = dockerService.getContainerLogs(containerId);
-            String allLogs = result.logs() + containerLogs;
 
-            return new CompileResponse(result.exitCode() == 0, allLogs, containerId);
+            return new CompileResponse(executionStatusCode == 0, containerLogs, containerId);
 
         } catch (Exception e) {
             log.error("Compilation failed for request: {}", request, e);
@@ -63,27 +64,31 @@ public class CompilerService {
         }
     }
 
-    private ContainerExecutionResult executeWithTimeout(String containerId) {
-        StringBuilder timeoutLogs = new StringBuilder();
-        int exitCode;
+    private void send(SseEmitter emitter, String message) throws Exception {
+        emitter.send("data: " + message + "\n\n");
+    }
 
+    private void safeSend(SseEmitter emitter, String message) {
         try {
-            exitCode = dockerService.waitForContainer(containerId, timeoutSeconds);
-        } catch (TimeoutException e) {
-            log.warn("Timeout for container {}", containerId);
-            dockerService.stopContainer(containerId);
-            timeoutLogs.append("Execution timed out after ").append(timeoutSeconds).append("s\n");
-            exitCode = TIMEOUT_EXIT_CODE;
-        } catch (InterruptedException e) {
-            log.error("Container execution interrupted: {}", containerId, e);
-            Thread.currentThread().interrupt();
-            exitCode = 1;
-        } catch (ExecutionException e) {
-            log.error("Container execution failed: {}", containerId, e);
-            exitCode = 1;
-        }
+            send(emitter, message);
+        } catch (Exception ignored) {}
+    }
 
-        return new ContainerExecutionResult(exitCode, timeoutLogs.toString());
+
+
+    public CompileResponse StopExecution(StopExecutionRequest request){
+        try{
+            dockerService.removeContainer(request.getContainerId());
+        } catch (Exception e) {
+            log.error("Error while stop container with id: {}", request.getContainerId());
+            return new CompileResponse(false, "Failed to stop execution process", "");
+        }
+        return new CompileResponse(true, "Execution stoped", "");
+    }
+
+    private int executeWithTimeout(String containerId)  {
+        String logs = "";
+        return dockerService.waitForContainer(containerId, timeoutSeconds);
     }
 
     private void cleanupContainer(String containerId) {
@@ -92,5 +97,4 @@ public class CompilerService {
         }
     }
 
-    private record ContainerExecutionResult(int exitCode, String logs) {}
 }

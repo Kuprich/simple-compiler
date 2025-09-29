@@ -1,35 +1,40 @@
 package org.coderun.compiler.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.coderun.compiler.dto.CompileRequest;
-import org.coderun.compiler.dto.CompileResponse;
+import org.coderun.compiler.dto.request.CompileRequest;
+import org.coderun.compiler.dto.response.CompileResponse;
+import org.coderun.compiler.dto.request.StopExecutionRequest;
 import org.coderun.compiler.service.CompilerService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/compiler")
 @CrossOrigin(origins = "*")
 public class CompilerController {
 
-    private final CompilerService service;
+    private final CompilerService compilerService;
 
-    public CompilerController(CompilerService service) {
-        this.service = service;
+    public CompilerController(CompilerService compilerService) {
+        this.compilerService = compilerService;
     }
 
     @PostMapping("/run")
     @Operation(
             summary = "Compile and execute Java code",
-            description = "Compiles Java source code and executes it in a Docker container",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successful compilation and execution"),
-                    @ApiResponse(responseCode = "400", description = "Invalid request parameters"),
-                    @ApiResponse(responseCode = "500", description = "Internal server error")
-            }
+            description = "Compiles Java source code and executes it in a Docker container"
     )
     public CompileResponse compileAndRun(@RequestBody CompileRequest request) {
-        return service.compileAndRun(request);
+        return compilerService.compileAndRun(request);
+    }
+
+    @PostMapping("/stopExecution")
+    @Operation(
+            summary = "",
+            description = ""
+    )
+    public CompileResponse StopExecution(@RequestBody StopExecutionRequest request) {
+        return compilerService.StopExecution(request);
     }
 }

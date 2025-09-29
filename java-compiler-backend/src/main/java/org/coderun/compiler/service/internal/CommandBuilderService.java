@@ -1,4 +1,4 @@
-package org.coderun.compiler.service;
+package org.coderun.compiler.service.internal;
 
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Volume;

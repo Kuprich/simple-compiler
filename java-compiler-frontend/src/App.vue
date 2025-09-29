@@ -8,13 +8,17 @@ const {compilerResponse, isCompiling, runCode } = useCompileAndRun()
 const handleRun = async (code: string, filename: string) => {
   await runCode({ code, filename })
 }
+const handleStop = () => {
+  compilerResponse.value.logs = "stopped"
+  isCompiling.value = false
+}
 </script>
 
 <template>
   <div class="wrapper">
     <Splitter layout="vertical" class="splitter">
       <SplitterPanel class="pane1" :size="75" :minSize="25">
-        <EditorPanel @run="handleRun" :isCompiling/>
+        <EditorPanel @run="handleRun" @stop="handleStop" :isCompiling/>
       </SplitterPanel>
       <SplitterPanel :size="25" :minSize="25">
         <OutputPanel :compilerResponse :isCompiling />

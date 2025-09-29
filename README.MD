@@ -35,4 +35,8 @@ Access the application at: http://localhost:5174
 - compiler-app: Vue.js frontend (port 5174)
 - compiler-api: Java compilation API - Spring Boot JAR (port 8080)
 - dind: Docker engine for code execution isolation
-- Note: Backend JAR must be built with Maven before running Docker Compose. Currently supports single Java file compilation.
+
+<hr>
+
+####  ⚠️  Note: 
+Backend JAR must be built with Maven before running Docker Compose. Currently supports single Java file compilation.
