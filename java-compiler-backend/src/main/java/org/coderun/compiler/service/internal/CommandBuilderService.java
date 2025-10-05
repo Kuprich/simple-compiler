@@ -15,9 +15,9 @@ public class CommandBuilderService {
     @Autowired
     FileService fileService;
 
-    public String buildJavaCompileAndRunCommand(String filename) {
+    public String buildJavaCompileAndRunCommand(File hostDir, String filename) {
         String className = extractClassName(filename);
-        String containerCodeDir = fileService.getHostCodeDir().getAbsolutePath();
+        String containerCodeDir = hostDir.getAbsolutePath();
         return String.format(
                 "javac %s/%s && java -cp %s %s",
                 containerCodeDir,
@@ -28,7 +28,7 @@ public class CommandBuilderService {
     }
 
     public Bind createBind(File hostDir) {
-        return new Bind(hostDir.getAbsolutePath(), new Volume(fileService.getHostCodeDir().getAbsolutePath()));
+        return new Bind(hostDir.getAbsolutePath(), new Volume(hostDir.getAbsolutePath()));
     }
 
     private String extractClassName(String filename) {

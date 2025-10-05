@@ -1,13 +1,9 @@
 package org.coderun.compiler.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import org.coderun.compiler.dto.request.CompileRequest;
-import org.coderun.compiler.dto.response.CompileResponse;
-import org.coderun.compiler.dto.request.StopExecutionRequest;
+import org.coderun.compiler.dto.request.compiler.*;
+import org.coderun.compiler.dto.response.ApiResponse;
 import org.coderun.compiler.service.CompilerService;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/compiler")
@@ -20,21 +16,49 @@ public class CompilerController {
         this.compilerService = compilerService;
     }
 
-    @PostMapping("/run")
-    @Operation(
-            summary = "Compile and execute Java code",
-            description = "Compiles Java source code and executes it in a Docker container"
-    )
-    public CompileResponse compileAndRun(@RequestBody CompileRequest request) {
-        return compilerService.compileAndRun(request);
+//    @PostMapping("/run")
+//    @Operation(
+//            summary = "Compile and execute Java code",
+//            description = "Compiles Java source code and executes it in a Docker container"
+//    )
+//    public CompileResponse compileAndRun(@RequestBody CompileRequest request) {
+//        return compilerService.compileAndRun(request);
+//    }
+
+    // 1 -> save code to dir
+    @PostMapping("/save")
+    public ApiResponse<String> saveSourceCode(@RequestBody CompileRequest request) {
+        return compilerService.saveSourceCode(request);
+    }
+
+    // 2 -> pull docker image
+    @GetMapping("/pullImage")
+    public ApiResponse<Void> pullImage() {
+        return compilerService.pullImage();
+    }
+
+    // 3 -> prepare and start image
+    @PostMapping("/prepare")
+    public ApiResponse<String> prepareImageAndRun(@RequestBody PrepareRequest request) {
+        return compilerService.prepareImageAndRun(request);
+    }
+
+    // 4 -> execute container with timeout
+    @PostMapping("/execute")
+    public ApiResponse<Integer> executeWithTimeout(@RequestBody ExecuteRequest request) {
+        return compilerService.executeWithTimeout(request);
+    }
+
+    // 5 -> collect logs
+    @PostMapping("/collectLogs")
+    public ApiResponse<String> collectLogs(@RequestBody CollectLogsRequest request) {
+        return compilerService.collectLogs(request);
     }
 
     @PostMapping("/stopExecution")
-    @Operation(
-            summary = "",
-            description = ""
-    )
-    public CompileResponse StopExecution(@RequestBody StopExecutionRequest request) {
+    public ApiResponse<Void> StopExecution(@RequestBody StopExecutionRequest request) {
         return compilerService.StopExecution(request);
     }
 }
+
+

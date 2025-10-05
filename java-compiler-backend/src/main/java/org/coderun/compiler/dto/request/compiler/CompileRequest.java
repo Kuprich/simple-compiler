@@ -1,4 +1,4 @@
-package org.coderun.compiler.dto.request;
+package org.coderun.compiler.dto.request.compiler;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

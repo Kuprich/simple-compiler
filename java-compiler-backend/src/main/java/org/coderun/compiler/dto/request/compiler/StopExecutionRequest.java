@@ -1,4 +1,4 @@
-package org.coderun.compiler.dto.request;
+package org.coderun.compiler.dto.request.compiler;
 
 import lombok.Getter;
 import lombok.Setter;
