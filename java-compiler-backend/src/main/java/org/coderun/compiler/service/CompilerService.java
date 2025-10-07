@@ -133,22 +133,15 @@ public class CompilerService {
         }
     }
 
-
     public ApiResponse<Void> StopExecution(StopExecutionRequest request) {
         try {
-            dockerService.removeContainer(request.getContainerId());
+            if (request.getContainerId() != null) {
+                dockerService.removeContainer(request.getContainerId());
+            }
             return ApiResponse.success();
         } catch (Exception e) {
             log.error("Error while stop container with id: {}", request.getContainerId());
             return ApiResponse.error(e.getMessage());
-        }
-    }
-
-
-
-    private void cleanupContainer(String containerId) {
-        if (containerId != null) {
-            dockerService.removeContainer(containerId);
         }
     }
 
