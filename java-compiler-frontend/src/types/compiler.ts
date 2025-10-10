@@ -1,12 +1,16 @@
+export interface PipelineSteep {
+  title: string
+  succes?: boolean
+  resultMessage?: string
+}
+
+
 export interface CompilerResponse {
-  success: boolean
   logs: string
-  containerId: string
+  debugSteeps: PipelineSteep[]
 }
 
 export interface RunCodeParams {
   filename: string
   code: string
 }
-
-

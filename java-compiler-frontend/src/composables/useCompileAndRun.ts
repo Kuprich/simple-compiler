@@ -1,8 +1,34 @@
-import type { CompilerResponse, RunCodeParams } from '@/types/compiler'
-import { ref } from 'vue'
+import type { CompilerResponse, PipelineSteep, RunCodeParams } from '@/types/compiler'
+import { reactive, ref } from 'vue'
 import axios from 'axios'
 
 export function useCompileAndRun() {
+  const HOST = 'http://localhost:8080/api/compiler'
+  const JSON_HEADERS = { 'Content-Type': 'application/json' }
+
+  interface ApiRequest<T = unknown> {
+    url: string
+    method: 'GET' | 'POST'
+    headers?: Record<string, string>
+    body?: T
+  }
+
+  interface SaveBody {
+    filename: string
+    code: string
+  }
+
+  interface PrepareBody {
+    codeDir: string
+  }
+
+  interface ExecuteBody {
+    containerId: string
+  }
+
+  interface CollectLogsBody {
+    containerId: string
+  }
 
   interface ApiRespose {
     success: boolean
@@ -10,27 +36,9 @@ export function useCompileAndRun() {
     data: string
   }
 
-  interface SaveRequest {
-    filename: string
-    code: string
-  }
-
-  interface PrepareRequest {
-    codeDir: string
-  }
-
-  interface ExecuteRequest {
-    containerId: string
-  }
-
-  interface CollectLogsRequest {
-    containerId: string
-  }
-
   const compilerResponse = ref<CompilerResponse>({
-    success: false,
     logs: '',
-    containerId: '',
+    debugSteeps: [],
   })
 
   const isCompiling = ref(false)
@@ -41,127 +49,150 @@ export function useCompileAndRun() {
     let _codeDir = ''
     let _containerId = ''
 
-    try {
+    compilerResponse.value.logs = ''
+    compilerResponse.value.debugSteeps = []
 
+    try {
       // 1. save source code
-      const saveRequest: SaveRequest = {
-        code: params.code,
-        filename: params.filename
+
+      const saveRequest: ApiRequest<SaveBody> = {
+        method: 'POST',
+        url: '/save',
+        headers: JSON_HEADERS,
+        body: {
+          code: params.code,
+          filename: params.filename,
+        },
       }
 
-      compilerResponse.value.logs = '1. Saving source code. '
+      const saveSteep = reactive<PipelineSteep>({
+        title: 'Saving source code.',
+      })
 
-      const saveResponse = await saveSourceCode(saveRequest)
+      compilerResponse.value.debugSteeps.push(saveSteep)
+      const saveResponse = await fetch(saveRequest)
+      saveSteep.succes = saveResponse.success
+
       if (saveResponse.success) {
         _codeDir = saveResponse.data
-        compilerResponse.value.logs += `Source code saved to temp directory: ${_codeDir}\n`
+        saveSteep.resultMessage = `Source code saved to temp directory: ${_codeDir}`
+      } else {
+        saveSteep.resultMessage = `Error: ${saveResponse.error}`
+        return
       }
-      else compilerResponse.value.logs += `Error: ${saveResponse.error}\n`
 
       // 2. pull docker image
-      compilerResponse.value.logs += '2. Pulling docker image. '
-      const pullResponse = await pullImage()
-      if (pullResponse.success)
-        compilerResponse.value.logs += 'Image pulled successefuly: (TODO: print image name and version)\n'
-      else
-        compilerResponse.value.logs += `Error: ${pullResponse.error}\n`
+      const pullRequest: ApiRequest = {
+        method: 'GET',
+        url: '/pullImage',
+      }
+
+      const pullSteep = reactive<PipelineSteep>({
+        title: 'Pulling docker image.',
+      })
+
+      compilerResponse.value.debugSteeps.push(pullSteep)
+      const pullResponse = await fetch(pullRequest)
+      pullSteep.succes = pullResponse.success
+
+      if (pullResponse.success) {
+        pullSteep.resultMessage = 'Image pulled successefuly: (TODO: print image name and version)'
+      } else {
+        pullSteep.resultMessage = `Error: ${pullResponse.error}`
+        return
+      }
 
       // 3. prepare docker image and run
-      const prepareRequest: PrepareRequest = {
-        codeDir: saveResponse.data
+
+      const prepareRequest: ApiRequest<PrepareBody> = {
+        method: 'POST',
+        url: '/prepare',
+        headers: JSON_HEADERS,
+        body: {
+          codeDir: _codeDir,
+        },
       }
-      compilerResponse.value.logs += '3. Preparing image and run. '
-      const prepareResponse = await prepareImageAndRun(prepareRequest)
-      if (prepareResponse.success){
+
+      const prepareSteep = reactive<PipelineSteep>({
+        title: 'Preparing image and run.',
+      })
+
+      compilerResponse.value.debugSteeps.push(prepareSteep)
+      const prepareResponse = await fetch(prepareRequest)
+      prepareSteep.succes = prepareResponse.success
+
+      if (prepareResponse.success) {
         _containerId = prepareResponse.data
-        compilerResponse.value.logs += `Container is running. Container id: ${_containerId}\n`
+        prepareSteep.resultMessage = `Container is running. Container id: ${_containerId}`
+      } else {
+        prepareSteep.resultMessage = `Error: ${prepareResponse.error}`
+        return
       }
-      else
-        compilerResponse.value.logs += `Error: ${prepareResponse.error}\n`
 
       // 4. execute container with timeout
-      const executeRequest: ExecuteRequest = {
-        containerId: _containerId
+      const executeRequest: ApiRequest<ExecuteBody> = {
+        method: 'POST',
+        url: '/execute',
+        headers: JSON_HEADERS,
+        body: {
+          containerId: _containerId,
+        },
       }
-      compilerResponse.value.logs += '4. Execute container with timeout (Todo: get execution timeout). '
-      const executeResponse = await executeWithTimeout(executeRequest)
-      if (executeResponse.success){
-        compilerResponse.value.logs += 'Success\n'
+
+      const executeSteep = reactive<PipelineSteep>({
+        title: 'Execute container with timeout (Todo: get execution timeout).',
+      })
+
+      compilerResponse.value.debugSteeps.push(executeSteep)
+
+      const executeResponse = await fetch(executeRequest)
+
+      executeSteep.succes = executeResponse.success
+
+      if (executeResponse.success) {
+        executeSteep.resultMessage = 'Success'
+      } else {
+        executeSteep.resultMessage = `Error: ${executeResponse.error}`
+        return
       }
-      else
-        compilerResponse.value.logs += `Error: ${executeResponse.error}\n`
 
       // 5. Collect logs
-      const collectLogsRequest: CollectLogsRequest = {
-        containerId: _containerId
+      const collectLogsRequest: ApiRequest<CollectLogsBody> = {
+        method: 'POST',
+        url: '/collectLogs',
+        headers: JSON_HEADERS,
+        body: {
+          containerId: _containerId,
+        },
       }
-      compilerResponse.value.logs += '5. Collect logs. '
-      const collectLogsResponse = await collectLogs(collectLogsRequest)
-      if (collectLogsResponse.success)
-        compilerResponse.value.logs += `Success\n\n${collectLogsResponse.data}\n`
-      else
-        compilerResponse.value.logs += `Error: ${collectLogsResponse.error}\n`
 
-    } catch (ex) {
-      compilerResponse.value.logs += ex instanceof Error ? ex.message : "Unknown Error\n"
-    }
-  }
-
-  const saveSourceCode = async (requestBody: RunCodeParams): Promise<ApiRespose> => {
-    try {
-      const response = await axios.post('http://localhost:8080/api/compiler/save', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const collectSteep = reactive<PipelineSteep>({
+        title: 'Collect logs.',
       })
-      return await response.data
+
+      compilerResponse.value.debugSteeps.push(collectSteep)
+      const collectLogsResponse = await fetch(collectLogsRequest)
+      collectSteep.succes = collectLogsResponse.success
+      if (collectLogsResponse.success) {
+        collectSteep.resultMessage = 'Success.'
+        compilerResponse.value.logs = collectLogsResponse.data
+      } else {
+        collectSteep.resultMessage = `Error: ${collectLogsResponse.error}`
+        return
+      }
     } catch (ex) {
-      throw ex
+      compilerResponse.value.logs += ex instanceof Error ? ex.message : 'Unknown Error\n'
     }
   }
 
-  const pullImage = async (): Promise<ApiRespose> => {
+  const fetch = async <T>(request: ApiRequest<T>): Promise<ApiRespose> => {
     try {
-      const response = await axios.get('http://localhost:8080/api/compiler/pullImage', {})
-      return await response.data
-    } catch (ex) {
-      throw ex
-    }
-  }
+      const requestHandlers = {
+        GET: () => axios.get(`${HOST}${request.url}`, { headers: request.headers }),
+        POST: () => axios.post(`${HOST}${request.url}`, request.body, { headers: request.headers }),
+      }
 
-  const prepareImageAndRun = async (requestBody: PrepareRequest): Promise<ApiRespose> => {
-    try {
-      const response = await axios.post('http://localhost:8080/api/compiler/prepare', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      return await response.data
-    } catch (ex) {
-      throw ex
-    }
-  }
-
-  const executeWithTimeout = async (requestBody: ExecuteRequest): Promise<ApiRespose> => {
-    try {
-      const response = await axios.post('http://localhost:8080/api/compiler/execute', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      return await response.data
-    } catch (ex) {
-      throw ex
-    }
-  }
-
-  const collectLogs = async (requestBody: CollectLogsRequest): Promise<ApiRespose> => {
-    try {
-      const response = await axios.post('http://localhost:8080/api/compiler/collectLogs', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const response = await requestHandlers[request.method]()
       return await response.data
     } catch (ex) {
       throw ex

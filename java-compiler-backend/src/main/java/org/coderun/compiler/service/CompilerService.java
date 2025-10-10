@@ -10,7 +10,6 @@ import org.coderun.compiler.service.internal.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,36 +32,6 @@ public class CompilerService {
 
     @Autowired
     private CommandBuilderService commandBuilder;
-
-//    public CompileResponse compileAndRun(CompileRequest request) {
-//        String containerId = null;
-//        try {
-//            // 1. Save code to file
-//            fileService.saveSourceCode(request.getFilename(), request.getCode());
-//
-//            // 2. Prepare Docker image
-//            dockerService.pullImageIfNeeded(dockerImage);
-//
-//            // 3. Create and run docker image
-//            String command = commandBuilder.buildJavaCompileAndRunCommand(request.getFilename());
-//            Bind bind = commandBuilder.createBind(fileService.getHostCodeDir());
-//            containerId = dockerService.createAndStartContainer(dockerImage, command, bind);
-//
-//            // 4. Run with timeout
-//            int executionStatusCode = executeWithTimeout_v1(containerId);
-//
-//            // 5. Collect logs (using DockerService)
-//            String containerLogs = dockerService.getContainerLogs(containerId);
-//
-//            return new CompileResponse(executionStatusCode == 0, containerLogs, containerId);
-//
-//        } catch (Exception e) {
-//            log.error("Compilation failed for request: {}", request, e);
-//            return new CompileResponse(false, "Error: " + e.getMessage(), containerId);
-//        } finally {
-//            cleanupContainer(containerId);
-//        }
-//    }
 
     public ApiResponse<String> saveSourceCode(CompileRequest request) {
         //1. Save source code to file
@@ -97,40 +66,30 @@ public class CompilerService {
         }
     }
 
-    public int executeWithTimeout_v1(String containerId) {
-        return dockerService.waitForContainer(containerId, timeoutSeconds);
-    }
 
     public ApiResponse<Integer> executeWithTimeout(ExecuteRequest request) {
         // 4. Run with timeout
-        try{
+        try {
             int executionStatusCode = dockerService.waitForContainer(request.getContainerId(), timeoutSeconds);
             return ApiResponse.success(executionStatusCode);
-        } catch (Exception e){
+        } catch (Exception e) {
+            dockerService.removeContainer(request.getContainerId());
             return ApiResponse.error(e.getMessage());
         }
     }
 
-    public ApiResponse<String> collectLogs(CollectLogsRequest request){
+    public ApiResponse<String> collectLogs(CollectLogsRequest request) {
         // 5. Collect logs (using DockerService)
-        try{
+        try {
             String containerLogs = dockerService.getContainerLogs(request.getContainerId());
             return ApiResponse.success(containerLogs);
-        }catch (Exception e){
+        } catch (Exception e) {
+
             return ApiResponse.error(e.getMessage());
+        } finally {
+            dockerService.removeContainer(request.getContainerId());
         }
 
-    }
-
-    private void send(SseEmitter emitter, String message) throws Exception {
-        emitter.send("data: " + message + "\n\n");
-    }
-
-    private void safeSend(SseEmitter emitter, String message) {
-        try {
-            send(emitter, message);
-        } catch (Exception ignored) {
-        }
     }
 
     public ApiResponse<Void> StopExecution(StopExecutionRequest request) {

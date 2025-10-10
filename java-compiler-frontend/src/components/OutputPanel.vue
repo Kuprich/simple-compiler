@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import type { CompilerResponse } from '@/types/compiler';
+import type { CompilerResponse } from '@/types/compiler'
 
 defineProps<{ compilerResponse: CompilerResponse; isCompiling: boolean }>()
+
+const isProcess = (state?: boolean) => {
+  return state == undefined
+}
+
+const isError = (state?: boolean) => {
+  return state != undefined && state == false
+}
 </script>
 
 <template>
@@ -10,10 +18,48 @@ defineProps<{ compilerResponse: CompilerResponse; isCompiling: boolean }>()
   </div>
 
   <div v-else class="outputWrapper h-full flex overflow-auto">
-    <div class="flex flex-1 p-2">
-      <pre class="text-sm">{{ compilerResponse.logs }}</pre>
+    <div class="flex flex-1 p-2 flex-col">
+      <div class="mb-3">
+        <div
+          v-for="(steep, index) in compilerResponse.debugSteeps"
+          :key="index"
+          class="debug-items"
+        >
+          <p>
+            <span>
+              <i
+                class="pi pi-check status-icon"
+                v-if="steep.succes"
+                style="color: var(--p-primary-color)"
+              ></i>
+              <i
+                class="pi pi-spin pi-spinner status-icon"
+                v-if="isProcess(steep.succes)"
+                style="color: var(--p-surface-500)"
+              ></i>
+              <i
+                class="pi pi-times status-icon"
+                v-if="isError(steep.succes)"
+                style="color: var(--p-red-500)"
+              ></i>
+            </span>
+            {{ steep.title }}
+            {{ steep.resultMessage }}
+          </p>
+        </div>
+      </div>
+
+      <pre>{{ compilerResponse.logs }}</pre>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.debug-items {
+  font-size: 0.9rem;
+  color: var(--p-surface-500);
+}
+.status-icon {
+  font-size: 0.7rem;
+}
+</style>
