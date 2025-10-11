@@ -1,17 +1,17 @@
-import type { CompilerResponse, PipelineSteep, RunCodeParams } from '@/types/compiler'
-import { reactive, ref } from 'vue'
+import type {
+  ApiRequest,
+  ApiResponse,
+  CompilerResponse,
+  PipelineSteep,
+  PipelineSteep_v2,
+  RunCodeParams,
+} from '@/types/compiler'
+import { reactive, ref, type Reactive } from 'vue'
 import axios from 'axios'
 
 export function useCompileAndRun() {
   const HOST = 'http://localhost:8080/api/compiler'
   const JSON_HEADERS = { 'Content-Type': 'application/json' }
-
-  interface ApiRequest<T = unknown> {
-    url: string
-    method: 'GET' | 'POST'
-    headers?: Record<string, string>
-    body?: T
-  }
 
   interface SaveBody {
     filename: string
@@ -30,15 +30,10 @@ export function useCompileAndRun() {
     containerId: string
   }
 
-  interface ApiRespose {
-    success: boolean
-    error: string
-    data: string
-  }
-
   const compilerResponse = ref<CompilerResponse>({
     logs: '',
     debugSteeps: [],
+    debugSteeps_v2: [],
   })
 
   const isCompiling = ref(false)
@@ -65,21 +60,29 @@ export function useCompileAndRun() {
         },
       }
 
-      const saveSteep = reactive<PipelineSteep>({
+      const saveSteep_v2 = reactive<PipelineSteep_v2>({
         title: 'Saving source code.',
+        status: 'process',
+        resultMessage: (): string => `Source code saved to temp directory: ${saveSteep_v2.params}`,
       })
 
-      compilerResponse.value.debugSteeps.push(saveSteep)
-      const saveResponse = await fetch(saveRequest)
-      saveSteep.succes = saveResponse.success
+      _codeDir = (await performSteep(saveSteep_v2, saveRequest)) as string
 
-      if (saveResponse.success) {
-        _codeDir = saveResponse.data
-        saveSteep.resultMessage = `Source code saved to temp directory: ${_codeDir}`
-      } else {
-        saveSteep.resultMessage = `Error: ${saveResponse.error}`
-        return
-      }
+      // const saveSteep = reactive<PipelineSteep>({
+      //   title: 'Saving source code.',
+      // })
+
+      // compilerResponse.value.debugSteeps.push(saveSteep)
+      // const saveResponse = await fetch(saveRequest)
+      // saveSteep.succes = saveResponse.success
+
+      // if (saveResponse.success) {
+      //   _codeDir = saveResponse.data
+      //   saveSteep.resultMessage = `Source code saved to temp directory: ${_codeDir}`
+      // } else {
+      //   saveSteep.resultMessage = `Error: ${saveResponse.error}`
+      //   return
+      // }
 
       // 2. pull docker image
       const pullRequest: ApiRequest = {
@@ -181,11 +184,27 @@ export function useCompileAndRun() {
         return
       }
     } catch (ex) {
+      compilerResponse.value.debugSteeps = []
       compilerResponse.value.logs += ex instanceof Error ? ex.message : 'Unknown Error\n'
     }
   }
 
-  const fetch = async <T>(request: ApiRequest<T>): Promise<ApiRespose> => {
+  const performSteep = async <T>(
+    steep: Reactive<PipelineSteep_v2>,
+    request: ApiRequest<T>,
+  ): Promise<string | void> => {
+    compilerResponse.value.debugSteeps_v2.push(steep)
+    const response = await fetch(request)
+    if (response.success) {
+      steep.status = 'success'
+      steep.params = response.data
+    } else {
+      steep.status = 'error'
+      steep.resultMessage = () => `Error: ${response.error}`
+    }
+  }
+
+  const fetch = async <T>(request: ApiRequest<T>): Promise<ApiResponse> => {
     try {
       const requestHandlers = {
         GET: () => axios.get(`${HOST}${request.url}`, { headers: request.headers }),
