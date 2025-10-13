@@ -14,7 +14,7 @@ defineProps<{ compilerResponse: CompilerResponse; isCompiling: boolean }>()
     <div class="flex flex-1 p-2 flex-col">
       <div class="mb-3">
         <div
-          v-for="(steep, index) in compilerResponse.debugSteeps_v2"
+          v-for="(steep, index) in compilerResponse.debugSteeps"
           :key="index"
           class="debug-items"
         >

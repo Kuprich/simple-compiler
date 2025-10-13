@@ -3,7 +3,6 @@ import type {
   ApiResponse,
   CompilerResponse,
   PipelineSteep,
-  PipelineSteep_v2,
   RunCodeParams,
 } from '@/types/compiler'
 import { reactive, ref, type Reactive } from 'vue'
@@ -26,14 +25,13 @@ export function useCompileAndRun() {
     containerId: string
   }
 
-  interface CollectLogsBody {
+  interface CollectBody {
     containerId: string
   }
 
   const compilerResponse = ref<CompilerResponse>({
     logs: '',
-    debugSteeps: [],
-    debugSteeps_v2: [],
+    debugSteeps: []
   })
 
   const isCompiling = ref(false)
@@ -60,29 +58,16 @@ export function useCompileAndRun() {
         },
       }
 
-      const saveSteep_v2 = reactive<PipelineSteep_v2>({
+      const saveSteep = reactive<PipelineSteep>({
         title: 'Saving source code.',
         status: 'process',
-        resultMessage: (): string => `Source code saved to temp directory: ${saveSteep_v2.params}`,
+        resultMessage: (): string => `Source code saved to temp directory: ${saveSteep.params}`,
       })
 
-      _codeDir = (await performSteep(saveSteep_v2, saveRequest)) as string
+      _codeDir = (await performSteep(saveSteep, saveRequest)) as string
 
-      // const saveSteep = reactive<PipelineSteep>({
-      //   title: 'Saving source code.',
-      // })
+      if (saveSteep.status === 'error') return
 
-      // compilerResponse.value.debugSteeps.push(saveSteep)
-      // const saveResponse = await fetch(saveRequest)
-      // saveSteep.succes = saveResponse.success
-
-      // if (saveResponse.success) {
-      //   _codeDir = saveResponse.data
-      //   saveSteep.resultMessage = `Source code saved to temp directory: ${_codeDir}`
-      // } else {
-      //   saveSteep.resultMessage = `Error: ${saveResponse.error}`
-      //   return
-      // }
 
       // 2. pull docker image
       const pullRequest: ApiRequest = {
@@ -92,18 +77,13 @@ export function useCompileAndRun() {
 
       const pullSteep = reactive<PipelineSteep>({
         title: 'Pulling docker image.',
+        status: 'process',
+        resultMessage: (): string => 'Image pulled successefuly: (TODO: print image name and version)'
       })
 
-      compilerResponse.value.debugSteeps.push(pullSteep)
-      const pullResponse = await fetch(pullRequest)
-      pullSteep.succes = pullResponse.success
+      await performSteep(pullSteep, pullRequest)
 
-      if (pullResponse.success) {
-        pullSteep.resultMessage = 'Image pulled successefuly: (TODO: print image name and version)'
-      } else {
-        pullSteep.resultMessage = `Error: ${pullResponse.error}`
-        return
-      }
+      if (pullSteep.status === 'error') return
 
       // 3. prepare docker image and run
 
@@ -118,19 +98,13 @@ export function useCompileAndRun() {
 
       const prepareSteep = reactive<PipelineSteep>({
         title: 'Preparing image and run.',
+        status: 'process',
+        resultMessage: (): string => `Container is running. Container id: ${prepareSteep.params}`
       })
 
-      compilerResponse.value.debugSteeps.push(prepareSteep)
-      const prepareResponse = await fetch(prepareRequest)
-      prepareSteep.succes = prepareResponse.success
+      _containerId = await performSteep(prepareSteep, prepareRequest) as string
 
-      if (prepareResponse.success) {
-        _containerId = prepareResponse.data
-        prepareSteep.resultMessage = `Container is running. Container id: ${_containerId}`
-      } else {
-        prepareSteep.resultMessage = `Error: ${prepareResponse.error}`
-        return
-      }
+      if (prepareSteep.status === 'error') return
 
       // 4. execute container with timeout
       const executeRequest: ApiRequest<ExecuteBody> = {
@@ -144,23 +118,16 @@ export function useCompileAndRun() {
 
       const executeSteep = reactive<PipelineSteep>({
         title: 'Execute container with timeout (Todo: get execution timeout).',
+        status: 'process',
+        resultMessage: (): string => 'Success'
       })
 
-      compilerResponse.value.debugSteeps.push(executeSteep)
+      await performSteep(executeSteep, executeRequest)
 
-      const executeResponse = await fetch(executeRequest)
-
-      executeSteep.succes = executeResponse.success
-
-      if (executeResponse.success) {
-        executeSteep.resultMessage = 'Success'
-      } else {
-        executeSteep.resultMessage = `Error: ${executeResponse.error}`
-        return
-      }
+      if (executeSteep.status === 'error') return
 
       // 5. Collect logs
-      const collectLogsRequest: ApiRequest<CollectLogsBody> = {
+      const collectRequest: ApiRequest<CollectBody> = {
         method: 'POST',
         url: '/collectLogs',
         headers: JSON_HEADERS,
@@ -171,36 +138,30 @@ export function useCompileAndRun() {
 
       const collectSteep = reactive<PipelineSteep>({
         title: 'Collect logs.',
+        status: 'process',
+        resultMessage: (): string => 'Success'
       })
 
-      compilerResponse.value.debugSteeps.push(collectSteep)
-      const collectLogsResponse = await fetch(collectLogsRequest)
-      collectSteep.succes = collectLogsResponse.success
-      if (collectLogsResponse.success) {
-        collectSteep.resultMessage = 'Success.'
-        compilerResponse.value.logs = collectLogsResponse.data
-      } else {
-        collectSteep.resultMessage = `Error: ${collectLogsResponse.error}`
-        return
-      }
+      compilerResponse.value.logs = await performSteep(collectSteep, collectRequest) as string
+
     } catch (ex) {
-      compilerResponse.value.debugSteeps = []
       compilerResponse.value.logs += ex instanceof Error ? ex.message : 'Unknown Error\n'
     }
   }
 
   const performSteep = async <T>(
-    steep: Reactive<PipelineSteep_v2>,
+    steep: Reactive<PipelineSteep>,
     request: ApiRequest<T>,
   ): Promise<string | void> => {
-    compilerResponse.value.debugSteeps_v2.push(steep)
+    compilerResponse.value.debugSteeps.push(steep)
     const response = await fetch(request)
     if (response.success) {
       steep.status = 'success'
       steep.params = response.data
+      return response.data
     } else {
       steep.status = 'error'
-      steep.resultMessage = () => `Error: ${response.error}`
+      steep.resultMessage = ():string => `Error: ${response.error}`
     }
   }
 

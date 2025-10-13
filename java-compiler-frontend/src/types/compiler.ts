@@ -1,11 +1,5 @@
 export interface PipelineSteep {
   title: string
-  succes?: boolean
-  resultMessage?: string
-}
-
-export interface PipelineSteep_v2 {
-  title: string
   status: 'process' | 'success' | 'error'
   params?: unknown
   resultMessage(): string
@@ -14,7 +8,6 @@ export interface PipelineSteep_v2 {
 export interface CompilerResponse {
   logs: string
   debugSteeps: PipelineSteep[]
-  debugSteeps_v2: PipelineSteep_v2[]
 }
 
 export interface RunCodeParams {
