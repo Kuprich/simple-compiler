@@ -1,13 +1,14 @@
-export interface PipelineSteep {
+export interface PipelineStep {
   title: string
   status: 'process' | 'success' | 'error'
   params?: unknown
   resultMessage(): string
+  request: ApiRequest
 }
 
 export interface CompilerResponse {
   logs: string
-  debugSteeps: PipelineSteep[]
+  debugSteps: PipelineStep[]
 }
 
 export interface RunCodeParams {

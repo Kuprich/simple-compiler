@@ -2,7 +2,7 @@ import type {
   ApiRequest,
   ApiResponse,
   CompilerResponse,
-  PipelineSteep,
+  PipelineStep,
   RunCodeParams,
 } from '@/types/compiler'
 import { reactive, ref, type Reactive } from 'vue'
@@ -31,7 +31,7 @@ export function useCompileAndRun() {
 
   const compilerResponse = ref<CompilerResponse>({
     logs: '',
-    debugSteeps: []
+    debugSteps: [],
   })
 
   const isCompiling = ref(false)
@@ -43,125 +43,60 @@ export function useCompileAndRun() {
     let _containerId = ''
 
     compilerResponse.value.logs = ''
-    compilerResponse.value.debugSteeps = []
+    compilerResponse.value.debugSteps = []
 
     try {
-      // 1. save source code
+      // 1. Save source code
 
-      const saveRequest: ApiRequest<SaveBody> = {
-        method: 'POST',
-        url: '/save',
-        headers: JSON_HEADERS,
-        body: {
-          code: params.code,
-          filename: params.filename,
-        },
+      const saveBody: SaveBody = {
+        code: params.code,
+        filename: params.filename,
       }
 
-      const saveSteep = reactive<PipelineSteep>({
-        title: 'Saving source code.',
-        status: 'process',
-        resultMessage: (): string => `Source code saved to temp directory: ${saveSteep.params}`,
-      })
+      const saveStep = buildSaveStep(saveBody)
+      _codeDir = (await performStep(saveStep)) as string
 
-      _codeDir = (await performSteep(saveSteep, saveRequest)) as string
-
-      if (saveSteep.status === 'error') return
-
+      if (saveStep.status === 'error') return
 
       // 2. pull docker image
-      const pullRequest: ApiRequest = {
-        method: 'GET',
-        url: '/pullImage',
-      }
 
-      const pullSteep = reactive<PipelineSteep>({
-        title: 'Pulling docker image.',
-        status: 'process',
-        resultMessage: (): string => 'Image pulled successefuly: (TODO: print image name and version)'
-      })
+      const pullStep = buildPullStep()
+      await performStep(pullStep)
 
-      await performSteep(pullSteep, pullRequest)
-
-      if (pullSteep.status === 'error') return
+      if (pullStep.status === 'error') return
 
       // 3. prepare docker image and run
 
-      const prepareRequest: ApiRequest<PrepareBody> = {
-        method: 'POST',
-        url: '/prepare',
-        headers: JSON_HEADERS,
-        body: {
-          codeDir: _codeDir,
-        },
-      }
+      const prepareStep = buildPrepareStep({ codeDir: _codeDir })
+      _containerId = (await performStep(prepareStep)) as string
 
-      const prepareSteep = reactive<PipelineSteep>({
-        title: 'Preparing image and run.',
-        status: 'process',
-        resultMessage: (): string => `Container is running. Container id: ${prepareSteep.params}`
-      })
-
-      _containerId = await performSteep(prepareSteep, prepareRequest) as string
-
-      if (prepareSteep.status === 'error') return
+      if (prepareStep.status === 'error') return
 
       // 4. execute container with timeout
-      const executeRequest: ApiRequest<ExecuteBody> = {
-        method: 'POST',
-        url: '/execute',
-        headers: JSON_HEADERS,
-        body: {
-          containerId: _containerId,
-        },
-      }
+      const executeStep = buildExecuteStep({ containerId: _containerId })
+      await performStep(executeStep)
 
-      const executeSteep = reactive<PipelineSteep>({
-        title: 'Execute container with timeout (Todo: get execution timeout).',
-        status: 'process',
-        resultMessage: (): string => 'Success'
-      })
-
-      await performSteep(executeSteep, executeRequest)
-
-      if (executeSteep.status === 'error') return
+      if (executeStep.status === 'error') return
 
       // 5. Collect logs
-      const collectRequest: ApiRequest<CollectBody> = {
-        method: 'POST',
-        url: '/collectLogs',
-        headers: JSON_HEADERS,
-        body: {
-          containerId: _containerId,
-        },
-      }
-
-      const collectSteep = reactive<PipelineSteep>({
-        title: 'Collect logs.',
-        status: 'process',
-        resultMessage: (): string => 'Success'
-      })
-
-      compilerResponse.value.logs = await performSteep(collectSteep, collectRequest) as string
+      const collectStep = buildCollectStep({containerId: _containerId})
+      compilerResponse.value.logs = (await performStep(collectStep)) as string
 
     } catch (ex) {
       compilerResponse.value.logs += ex instanceof Error ? ex.message : 'Unknown Error\n'
     }
   }
 
-  const performSteep = async <T>(
-    steep: Reactive<PipelineSteep>,
-    request: ApiRequest<T>,
-  ): Promise<string | void> => {
-    compilerResponse.value.debugSteeps.push(steep)
-    const response = await fetch(request)
+  const performStep = async (step: Reactive<PipelineStep>): Promise<string | void> => {
+    compilerResponse.value.debugSteps.push(step)
+    const response = await fetch(step.request)
     if (response.success) {
-      steep.status = 'success'
-      steep.params = response.data
+      step.status = 'success'
+      step.params = response.data
       return response.data
     } else {
-      steep.status = 'error'
-      steep.resultMessage = ():string => `Error: ${response.error}`
+      step.status = 'error'
+      step.resultMessage = (): string => `Error: ${response.error}`
     }
   }
 
@@ -177,6 +112,95 @@ export function useCompileAndRun() {
     } catch (ex) {
       throw ex
     }
+  }
+
+  const buildSaveStep = (body: SaveBody): Reactive<PipelineStep> => {
+    const saveRequest: ApiRequest<SaveBody> = {
+      method: 'POST',
+      url: '/save',
+      headers: JSON_HEADERS,
+      body: body,
+    }
+
+    const saveStep = reactive<PipelineStep>({
+      title: 'Saving source code.',
+      status: 'process',
+      resultMessage: (): string => `Source code saved to temp directory: ${saveStep.params}`,
+      request: saveRequest,
+    })
+
+    return saveStep
+  }
+
+  const buildPullStep = (): Reactive<PipelineStep> => {
+    const pullRequest: ApiRequest = {
+      method: 'GET',
+      url: '/pullImage',
+    }
+
+    const pullStep = reactive<PipelineStep>({
+      title: 'Pulling docker image.',
+      status: 'process',
+      resultMessage: (): string =>
+        'Image pulled successefuly: (TODO: print image name and version)',
+      request: pullRequest,
+    })
+
+    return pullStep
+  }
+
+  const buildPrepareStep = (body: PrepareBody): Reactive<PipelineStep> => {
+    const prepareRequest: ApiRequest<PrepareBody> = {
+      method: 'POST',
+      url: '/prepare',
+      headers: JSON_HEADERS,
+      body: body,
+    }
+
+    const prepareStep = reactive<PipelineStep>({
+      title: 'Preparing image and run.',
+      status: 'process',
+      resultMessage: (): string => `Container is running. Container id: ${prepareStep.params}`,
+      request: prepareRequest,
+    })
+
+    return prepareStep
+  }
+
+  const buildExecuteStep = (body: ExecuteBody): Reactive<PipelineStep> => {
+    const executeRequest: ApiRequest<ExecuteBody> = {
+      method: 'POST',
+      url: '/execute',
+      headers: JSON_HEADERS,
+      body: body,
+    }
+
+    const executeStep = reactive<PipelineStep>({
+      title: 'Execute container with timeout (Todo: get execution timeout).',
+      status: 'process',
+      resultMessage: (): string => 'Success',
+      request: executeRequest,
+    })
+
+    return executeStep
+  }
+
+  const buildCollectStep = (body: CollectBody): Reactive<PipelineStep> => {
+    const collectRequest: ApiRequest<CollectBody> = {
+      method: 'POST',
+      url: '/collectLogs',
+      headers: JSON_HEADERS,
+      body: body,
+    }
+
+    const collectStep = reactive<PipelineStep>({
+      title: 'Collect logs.',
+      status: 'process',
+      resultMessage: (): string => 'Success',
+      request: collectRequest,
+    })
+
+    return collectStep
   }
 
   return { compilerResponse, isCompiling, runCode }
