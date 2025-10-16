@@ -35,9 +35,13 @@ export function useCompileAndRun() {
   })
 
   const isCompiling = ref(false)
+  const abortController = ref<AbortController>()
 
   async function runCode(params: RunCodeParams) {
-    isCompiling.value = false
+    abortController.value = new AbortController()
+    const signal = abortController.value.signal
+
+    isCompiling.value = true
 
     let _codeDir = ''
     let _containerId = ''
@@ -54,42 +58,61 @@ export function useCompileAndRun() {
       }
 
       const saveStep = buildSaveStep(saveBody)
-      _codeDir = (await performStep(saveStep)) as string
+      _codeDir = (await performStep(saveStep, signal)) as string
 
       if (saveStep.status === 'error') return
 
       // 2. pull docker image
 
       const pullStep = buildPullStep()
-      await performStep(pullStep)
+      await performStep(pullStep, signal)
 
       if (pullStep.status === 'error') return
 
       // 3. prepare docker image and run
 
       const prepareStep = buildPrepareStep({ codeDir: _codeDir })
-      _containerId = (await performStep(prepareStep)) as string
+      _containerId = (await performStep(prepareStep, signal)) as string
 
       if (prepareStep.status === 'error') return
 
       // 4. execute container with timeout
       const executeStep = buildExecuteStep({ containerId: _containerId })
-      await performStep(executeStep)
+      await performStep(executeStep, signal)
 
       if (executeStep.status === 'error') return
 
       // 5. Collect logs
-      const collectStep = buildCollectStep({containerId: _containerId})
-      compilerResponse.value.logs = (await performStep(collectStep)) as string
-
-    } catch (ex) {
-      compilerResponse.value.logs += ex instanceof Error ? ex.message : 'Unknown Error\n'
-    }
+      const collectStep = buildCollectStep({ containerId: _containerId })
+      compilerResponse.value.logs = (await performStep(collectStep, signal)) as string
+    } catch {}
+    isCompiling.value = false
   }
 
-  const performStep = async (step: Reactive<PipelineStep>): Promise<string | void> => {
+  const performStep = async (
+    step: Reactive<PipelineStep>,
+    signal: AbortSignal,
+  ): Promise<string | void> => {
     compilerResponse.value.debugSteps.push(step)
-    const response = await fetch(step.request)
+
+    if (signal.aborted) {
+      step.resultMessage = (): string => 'Stoppped by user'
+      return
+    }
+
+    try {
+    } catch (ex) {
+      if (axios.isCancel(ex)) {
+        step.resultMessage = (): string => 'Stoppped by user'
+        return
+      } else {
+        step.resultMessage = (): string => `Error: ${(ex as Error).message}`
+        return
+      }
+    }
+
+    const response = await fetch(step.request, signal)
+
     if (response.success) {
       step.status = 'success'
       step.params = response.data
@@ -100,17 +123,29 @@ export function useCompileAndRun() {
     }
   }
 
-  const fetch = async <T>(request: ApiRequest<T>): Promise<ApiResponse> => {
+  const fetch = async <T>(request: ApiRequest<T>, signal: AbortSignal): Promise<ApiResponse> => {
     try {
       const requestHandlers = {
-        GET: () => axios.get(`${HOST}${request.url}`, { headers: request.headers }),
-        POST: () => axios.post(`${HOST}${request.url}`, request.body, { headers: request.headers }),
+        GET: () => axios.get(`${HOST}${request.url}`, { headers: request.headers, signal }),
+        POST: () =>
+          axios.post(`${HOST}${request.url}`, request.body, { headers: request.headers, signal }),
       }
 
       const response = await requestHandlers[request.method]()
       return await response.data
     } catch (ex) {
       throw ex
+    }
+  }
+
+  const stopExecution = () => {
+    if (abortController.value) {
+      abortController.value.abort()
+
+      compilerResponse.value.debugSteps = []
+      compilerResponse.value.logs = 'Cancelled by user...'
+
+      isCompiling.value = false
     }
   }
 
@@ -203,5 +238,5 @@ export function useCompileAndRun() {
     return collectStep
   }
 
-  return { compilerResponse, isCompiling, runCode }
+  return { compilerResponse, isCompiling, runCode, stopExecution }
 }
