@@ -5,6 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class StopExecutionRequest {
+public class CleanupExecutionRequest {
     private String containerId;
+    private String codeDir;
 }

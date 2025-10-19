@@ -10,11 +10,6 @@ import java.io.File;
 @Service
 public class CommandBuilderService {
 
-    //private static final String CONTAINER_CODE_DIR = "/code";
-
-    @Autowired
-    FileService fileService;
-
     public String buildJavaCompileAndRunCommand(File hostDir, String filename) {
         String className = extractClassName(filename);
         String containerCodeDir = hostDir.getAbsolutePath();

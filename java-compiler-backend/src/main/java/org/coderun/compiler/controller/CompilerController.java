@@ -16,15 +16,6 @@ public class CompilerController {
         this.compilerService = compilerService;
     }
 
-//    @PostMapping("/run")
-//    @Operation(
-//            summary = "Compile and execute Java code",
-//            description = "Compiles Java source code and executes it in a Docker container"
-//    )
-//    public CompileResponse compileAndRun(@RequestBody CompileRequest request) {
-//        return compilerService.compileAndRun(request);
-//    }
-
     // 1 -> save code to dir
     @PostMapping("/save")
     public ApiResponse<String> saveSourceCode(@RequestBody CompileRequest request) {
@@ -55,9 +46,9 @@ public class CompilerController {
         return compilerService.collectLogs(request);
     }
 
-    @PostMapping("/stopExecution")
-    public ApiResponse<Void> StopExecution(@RequestBody StopExecutionRequest request) {
-        return compilerService.StopExecution(request);
+    @PostMapping("/cleanup")
+    public ApiResponse<Void> cleanupExecution(@RequestBody CleanupExecutionRequest request) {
+        return compilerService.cleanupExecution(request);
     }
 }
 

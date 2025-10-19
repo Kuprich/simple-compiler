@@ -2,6 +2,7 @@ package org.coderun.compiler.service.internal;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +39,21 @@ public class FileService {
     }
 
     public String saveSourceCode(String filename, String code) throws IOException {
-
         String projectName = "/project_" + generatePrefix();
         File projectDir = initializeDirectory(hostCodeDir + projectName);
         File javaFile = new File(projectDir, filename);
         Files.writeString(javaFile.toPath(), code, StandardCharsets.UTF_8);
         log.debug("Source code saved to: {}", javaFile.getAbsolutePath());
-        return projectDir.getCanonicalPath();
+        return projectDir.getName();
+    }
+    public File getFullProjectDirectory(String projectDir){
+        return new File(this.hostCodeDir, projectDir);
+    }
+
+    public void removeSourceCode(String codeDir) throws IOException {
+        File directory = getFullProjectDirectory(codeDir);
+        if (directory.exists())
+            FileUtils.deleteDirectory(directory);
     }
 
     private File initializeDirectory(String path) {
@@ -55,6 +64,7 @@ public class FileService {
         log.info("Code directory initialized: {}", directory.getAbsolutePath());
         return directory;
     }
+
 
     private boolean isRunningInDocker() {
         try {

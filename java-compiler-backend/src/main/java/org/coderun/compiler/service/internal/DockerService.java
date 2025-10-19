@@ -42,9 +42,10 @@ public class DockerService {
     /**
      * Create and start a container with given image, command and volume binding.
      */
-    public String createAndStartContainer(String image, String command, Bind bind) {
+    public String createAndStartContainer(String image, String containerName, String command, Bind bind) {
         try {
             CreateContainerResponse container = dockerClient.createContainerCmd(image)
+                    .withName(containerName)
                     .withCmd("sh", "-c", command) // NOTE: Ensure 'command' is safe
                     .withHostConfig(
                             HostConfig.newHostConfig()
@@ -101,6 +102,10 @@ public class DockerService {
         } catch (Exception e) {
             log.warn("Failed to remove container {}", containerId, e);
         }
+    }
+
+    public String getContainerNameById(String containerId) {
+        return dockerClient.inspectContainerCmd(containerId).exec().getName();
     }
 
     /**

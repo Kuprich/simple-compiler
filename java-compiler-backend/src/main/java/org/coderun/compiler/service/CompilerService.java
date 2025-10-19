@@ -35,8 +35,9 @@ public class CompilerService {
 
     public ApiResponse<String> saveSourceCode(CompileRequest request) {
         //1. Save source code to file
+        String codeDir = "";
         try {
-            String codeDir = fileService.saveSourceCode(request.getFilename(), request.getCode());
+            codeDir = fileService.saveSourceCode(request.getFilename(), request.getCode());
             return ApiResponse.success(codeDir);
         } catch (IOException e) {
             return ApiResponse.error(e.getMessage());
@@ -56,10 +57,10 @@ public class CompilerService {
     public ApiResponse<String> prepareImageAndRun(PrepareRequest request) {
         // 3. Create and run docker image
         try {
-            File hostDir = new File(request.getCodeDir());
-            String command = commandBuilder.buildJavaCompileAndRunCommand(hostDir, "Main.java");
-            Bind bind = commandBuilder.createBind(hostDir);
-            String containerId = dockerService.createAndStartContainer(dockerImage, command, bind);
+            File fullProjectDirectory = fileService.getFullProjectDirectory(request.getCodeDir());
+            String command = commandBuilder.buildJavaCompileAndRunCommand(fullProjectDirectory, "Main.java");
+            Bind bind = commandBuilder.createBind(fullProjectDirectory);
+            String containerId = dockerService.createAndStartContainer(dockerImage, request.getCodeDir(), command, bind);
             return ApiResponse.success(containerId);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -73,7 +74,6 @@ public class CompilerService {
             int executionStatusCode = dockerService.waitForContainer(request.getContainerId(), timeoutSeconds);
             return ApiResponse.success(executionStatusCode);
         } catch (Exception e) {
-            dockerService.removeContainer(request.getContainerId());
             return ApiResponse.error(e.getMessage());
         }
     }
@@ -84,24 +84,40 @@ public class CompilerService {
             String containerLogs = dockerService.getContainerLogs(request.getContainerId());
             return ApiResponse.success(containerLogs);
         } catch (Exception e) {
-
             return ApiResponse.error(e.getMessage());
-        } finally {
-            dockerService.removeContainer(request.getContainerId());
         }
-
     }
 
-    public ApiResponse<Void> StopExecution(StopExecutionRequest request) {
-        try {
-            if (request.getContainerId() != null) {
-                dockerService.removeContainer(request.getContainerId());
+//    private void cleanup(String containerId) {
+//        String containerName = dockerService.getContainerNameById(containerId);
+//        try {
+//            fileService.removeSourceCode(containerName);
+//            dockerService.removeContainer(containerId);
+//        } catch (IOException ignored) { }
+//    }
+//
+//    private void removeSourceCode(String codeDir){
+//        try {
+//            fileService.removeSourceCode(codeDir);
+//        } catch (IOException ignored) { }
+//    }
+
+    public ApiResponse<Void> cleanupExecution(CleanupExecutionRequest request) {
+
+        if (!request.getCodeDir().isEmpty()){
+            try {
+                fileService.removeSourceCode(request.getCodeDir());
+            } catch (IOException e) {
+                log.error("Error while remove source code directory: {}", request.getCodeDir());
+                return ApiResponse.error(e.getMessage());
             }
-            return ApiResponse.success();
-        } catch (Exception e) {
-            log.error("Error while stop container with id: {}", request.getContainerId());
-            return ApiResponse.error(e.getMessage());
         }
+
+        if (!request.getContainerId().isEmpty()){
+            dockerService.removeContainer(request.getContainerId());
+        }
+        return ApiResponse.success();
+
     }
 
 }
