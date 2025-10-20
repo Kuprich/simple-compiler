@@ -28,6 +28,7 @@ export function useCompileAndRun() {
 
     let _codeDir = ''
     let _containerId = ''
+    let _cleaup_needed = false
 
     compilerResponse.value.logs = ''
     compilerResponse.value.debugSteps = []
@@ -41,6 +42,8 @@ export function useCompileAndRun() {
       })
       _codeDir = (await performStep(saveStep, signal)) as string
       if (saveStep.status !== 'success') return
+
+      _cleaup_needed = true
 
       // 2. pull docker image
 
@@ -66,10 +69,17 @@ export function useCompileAndRun() {
       const collectStep = PipelineStepBuilder.buildCollectStep({ containerId: _containerId })
       compilerResponse.value.logs = (await performStep(collectStep, signal)) as string
     } catch {
+      return
     } finally {
       isCompiling.value = false
+      if (_cleaup_needed) {
+        const cleanupSteep = PipelineStepBuilder.buildCleanupStep({
+          codeDir: _codeDir,
+          containerId: _containerId,
+        })
+        await performStep(cleanupSteep, signal)
+      }
     }
-
   }
 
   const performStep = async (
