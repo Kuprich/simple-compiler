@@ -28,7 +28,10 @@ defineProps<{ compilerResponse: CompilerResponse; isCompiling: boolean }>()
               ></i>
             </span>
             {{ steep.title }}
-            {{ steep.resultMessage() }}
+            <span v-if="steep.status != 'process'">
+              {{ steep.resultMessage() }}
+            </span>
+
           </p>
         </div>
       </div>

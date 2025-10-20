@@ -44,11 +44,11 @@ public class CompilerService {
         }
     }
 
-    public ApiResponse<Void> pullImage() {
+    public ApiResponse<String> pullImage() {
         // 2. Prepare Docker image
         try {
             dockerService.pullImageIfNeeded(dockerImage);
-            return ApiResponse.success();
+            return ApiResponse.success(dockerImage);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }

@@ -24,7 +24,7 @@ public class CompilerController {
 
     // 2 -> pull docker image
     @GetMapping("/pullImage")
-    public ApiResponse<Void> pullImage() {
+    public ApiResponse<String> pullImage() {
         return compilerService.pullImage();
     }
 
@@ -46,6 +46,7 @@ public class CompilerController {
         return compilerService.collectLogs(request);
     }
 
+    // 6 -> cleanup execution
     @PostMapping("/cleanup")
     public ApiResponse<Void> cleanupExecution(@RequestBody CleanupExecutionRequest request) {
         return compilerService.cleanupExecution(request);

@@ -57,7 +57,7 @@ export class PipelineStepBuilder {
       title: 'Pulling docker image.',
       status: 'process',
       resultMessage: (): string =>
-        'Image pulled successefuly: (TODO: print image name and version)',
+        `Image pulled successefuly: ${pullStep.params}`,
       request: pullRequest,
     })
 
@@ -91,7 +91,7 @@ export class PipelineStepBuilder {
     }
 
     const executeStep = reactive<PipelineStep>({
-      title: 'Execute container with timeout (Todo: get execution timeout).',
+      title: 'Execute container with timeout',
       status: 'process',
       resultMessage: (): string => 'Success',
       request: executeRequest,
