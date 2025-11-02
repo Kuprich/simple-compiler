@@ -3,8 +3,9 @@ import { computed } from 'vue'
 import { Codemirror } from 'vue-codemirror'
 import { java } from '@codemirror/lang-java'
 import { oneDark } from '@codemirror/theme-one-dark'
+import { useTheme } from '@/composables/useTheme'
 
-const props = defineProps<{ modelValue: string, isDarkTheme: boolean}>()
+const props = defineProps<{ modelValue: string }>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
@@ -14,9 +15,10 @@ const code = computed({
   set: (val: string) => emit('update:modelValue', val),
 })
 
-//const extensions = [java()]
+const { isDarkTheme } = useTheme()
+
 const extensions = computed(() => {
-  return props.isDarkTheme ? [java(), oneDark] : [java()]
+  return isDarkTheme.value ? [java(), oneDark] : [java()]
 })
 </script>
 

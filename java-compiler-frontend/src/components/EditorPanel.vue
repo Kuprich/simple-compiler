@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
+import { useTheme } from '@/composables/useTheme';
 
 defineProps<{ isCompiling: boolean }>()
 
@@ -23,18 +24,8 @@ defineEmits<{
   stop: []
 }>()
 
-const isDarkTheme = ref<boolean>(false)
+const {toggleTheme} = useTheme()
 
-function toggleTheme() {
-
-  isDarkTheme.value = !isDarkTheme.value
-
-  if (isDarkTheme.value) {
-    document.documentElement.classList.add('my-app-dark')
-  } else {
-    document.documentElement.classList.remove('my-app-dark')
-  }
-}
 
 </script>
 
@@ -71,7 +62,7 @@ function toggleTheme() {
     </TabList>
     <TabPanels>
       <TabPanel value="0">
-        <CodeEditor v-model="code" :isDarkTheme="isDarkTheme"/>
+        <CodeEditor v-model="code"/>
       </TabPanel>
     </TabPanels>
   </Tabs>
