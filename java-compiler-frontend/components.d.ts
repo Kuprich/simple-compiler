@@ -21,5 +21,6 @@ declare module 'vue' {
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabPanels: typeof import('primevue/tabpanels')['default']
     Tabs: typeof import('primevue/tabs')['default']
+    TopMenu: typeof import('./src/components/TopMenu.vue')['default']
   }
 }

@@ -104,7 +104,7 @@ public class CompilerService {
 
     public ApiResponse<Void> cleanupExecution(CleanupExecutionRequest request) {
 
-        if (!request.getCodeDir().isEmpty()){
+        if (request.getCodeDir() != null && !request.getCodeDir().isEmpty()){
             try {
                 fileService.removeSourceCode(request.getCodeDir());
             } catch (IOException e) {
@@ -113,7 +113,7 @@ public class CompilerService {
             }
         }
 
-        if (!request.getContainerId().isEmpty()){
+        if (request.getContainerId() != null && !request.getContainerId().isEmpty()){
             dockerService.removeContainer(request.getContainerId());
         }
         return ApiResponse.success();

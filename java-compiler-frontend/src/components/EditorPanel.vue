@@ -7,6 +7,7 @@ defineProps<{ isCompiling: boolean }>()
 
 const runIcon = PrimeIcons.PLAY
 const stopIcon = PrimeIcons.STOP
+const sunIcon = PrimeIcons.SUN
 
 const code = ref(`public class Main {
     public static void main(String[] args) {
@@ -21,6 +22,20 @@ defineEmits<{
   run: [code: string, className: string]
   stop: []
 }>()
+
+const isDarkTheme = ref<boolean>(false)
+
+function toggleTheme() {
+
+  isDarkTheme.value = !isDarkTheme.value
+
+  if (isDarkTheme.value) {
+    document.documentElement.classList.add('my-app-dark')
+  } else {
+    document.documentElement.classList.remove('my-app-dark')
+  }
+}
+
 </script>
 
 <template>
@@ -28,7 +43,7 @@ defineEmits<{
     <TabList>
       <div class="my-tabs">
         <div>
-          <Tab value="0" class="text-sm">Main.java</Tab>
+          <Tab value="0">Main.java</Tab>
         </div>
         <div class="controls">
           <Button
@@ -45,12 +60,18 @@ defineEmits<{
             variant="text"
             @click="$emit('stop')"
           />
+           <Button
+            :icon="sunIcon"
+            severity="primary"
+            variant="text"
+            @click="toggleTheme"
+          />
         </div>
       </div>
     </TabList>
     <TabPanels>
       <TabPanel value="0">
-        <CodeEditor v-model="code" />
+        <CodeEditor v-model="code" :isDarkTheme="isDarkTheme"/>
       </TabPanel>
     </TabPanels>
   </Tabs>
@@ -60,7 +81,7 @@ defineEmits<{
 .tabs {
   --p-tabs-tabpanel-padding: 0;
   --p-tabs-tab-font-weight: 400;
-  --p-tabs-tab-padding: 0.6rem 1.125rem;
+  --p-tabs-tab-padding: 0.3rem 1.125rem;
 }
 .my-tabs {
   display: flex;

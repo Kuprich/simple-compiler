@@ -77,16 +77,16 @@ export function useCompileAndRun() {
           codeDir: _codeDir,
           containerId: _containerId,
         })
-        await performStep(cleanupSteep, signal)
+        await performStep(cleanupSteep)
       }
     }
   }
 
   const performStep = async (
     step: Reactive<PipelineStep>,
-    signal: AbortSignal,
+    signal?: AbortSignal,
   ): Promise<string | void> => {
-    if (signal.aborted) return
+    if (signal?.aborted) return
 
     compilerResponse.value.debugSteps.push(step)
 
@@ -107,7 +107,7 @@ export function useCompileAndRun() {
     }
   }
 
-  const fetch = async <T>(request: ApiRequest<T>, signal: AbortSignal): Promise<ApiResponse> => {
+  const fetch = async <T>(request: ApiRequest<T>, signal?: AbortSignal): Promise<ApiResponse> => {
     try {
       const requestHandlers = {
         GET: () => axios.get(`${HOST}${request.url}`, { headers: request.headers, signal }),
@@ -124,10 +124,11 @@ export function useCompileAndRun() {
 
   const stopExecution = () => {
     if (abortController.value) {
-      abortController.value.abort()
 
       compilerResponse.value.debugSteps = []
       compilerResponse.value.logs = 'Cancelled by user...'
+
+      abortController.value.abort()
 
       isCompiling.value = false
     }
