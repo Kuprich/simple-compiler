@@ -2,20 +2,25 @@
 import { ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
-import { useTheme } from '@/composables/useTheme';
+import { useTheme } from '@/composables/useTheme'
 
 defineProps<{ isCompiling: boolean }>()
 
 const runIcon = PrimeIcons.PLAY
 const stopIcon = PrimeIcons.STOP
 const sunIcon = PrimeIcons.SUN
+const plusIcon = PrimeIcons.PLUS
 
-const code = ref(`public class Main {
+const mainCode = `public class Main {
     public static void main(String[] args) {
       for (int i = 0; i < 5; i++)
         System.out.println("Hello, World!");
     }
-}`)
+}`
+
+const fooCode = `public class Foo {
+
+}`
 
 const className = 'Main.java'
 
@@ -24,17 +29,42 @@ defineEmits<{
   stop: []
 }>()
 
-const {toggleTheme} = useTheme()
+const { toggleTheme } = useTheme()
 
+interface TabItem {
+  name: string
+  code: string
+}
 
+const tabs = ref<TabItem[]>([
+  {
+    name: 'Main.java',
+    code: mainCode
+  },
+  {
+    name: 'Foo.java',
+    code: fooCode
+  },
+])
+
+function addTab() {}
 </script>
 
 <template>
-  <Tabs value="0" class="tabs">
+  <Tabs :value="0" class="tabs">
     <TabList>
       <div class="my-tabs">
         <div>
-          <Tab value="0">Main.java</Tab>
+          <Tab v-for="(tab, i) in tabs" :key="i" :value="i" >
+            {{ tab.name }}
+          </Tab>
+          <Button
+            class="tab-btn"
+            :icon="plusIcon"
+            severity="secondary"
+            variant="text"
+            @click="addTab"
+          />
         </div>
         <div class="controls">
           <Button
@@ -42,7 +72,7 @@ const {toggleTheme} = useTheme()
             :disabled="isCompiling"
             severity="success"
             variant="text"
-            @click="$emit('run', code, className)"
+            @click="$emit('run', mainCode, className)"
           />
           <Button
             :icon="stopIcon"
@@ -51,28 +81,23 @@ const {toggleTheme} = useTheme()
             variant="text"
             @click="$emit('stop')"
           />
-           <Button
-            :icon="sunIcon"
-            severity="primary"
-            variant="text"
-            @click="toggleTheme"
-          />
+          <Button :icon="sunIcon" severity="primary" variant="text" @click="toggleTheme" />
         </div>
       </div>
     </TabList>
     <TabPanels>
-      <TabPanel value="0">
-        <CodeEditor v-model="code"/>
+      <TabPanel v-for="(tab, i) in tabs" :value="i" :key="i">
+        <CodeEditor v-model="tab.code" />
       </TabPanel>
     </TabPanels>
   </Tabs>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .tabs {
   --p-tabs-tabpanel-padding: 0;
   --p-tabs-tab-font-weight: 400;
-  --p-tabs-tab-padding: 0.3rem 1.125rem;
+  --p-tabs-tab-padding: 0.25rem 1.125rem;
 }
 .my-tabs {
   display: flex;
@@ -81,8 +106,10 @@ const {toggleTheme} = useTheme()
   align-items: center;
 }
 
-.my-tabs .controls {
+.my-tabs .controls button,
+button.tab-btn {
   --p-button-padding-x: 0;
   --p-button-padding-y: 0.2rem;
+  border-radius: 0%;
 }
 </style>
