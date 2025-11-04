@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
+import NewFileDialog from './NewFileDialog.vue';
 
 defineProps<{ isCompiling: boolean }>()
 
-const runIcon = PrimeIcons.PLAY
-const stopIcon = PrimeIcons.STOP
-const sunIcon = PrimeIcons.SUN
-const plusIcon = PrimeIcons.PLUS
+defineEmits<{
+  run: [code: string, className: string]
+  stop: []
+}>()
 
 const mainCode = `public class Main {
     public static void main(String[] args) {
@@ -22,15 +23,6 @@ const fooCode = `public class Foo {
 
 }`
 
-const className = 'Main.java'
-
-defineEmits<{
-  run: [code: string, className: string]
-  stop: []
-}>()
-
-const { toggleTheme } = useTheme()
-
 interface TabItem {
   name: string
   code: string
@@ -39,15 +31,29 @@ interface TabItem {
 const tabs = ref<TabItem[]>([
   {
     name: 'Main.java',
-    code: mainCode
+    code: mainCode,
   },
   {
     name: 'Foo.java',
-    code: fooCode
+    code: fooCode,
   },
 ])
 
-function addTab() {}
+const isDialogOpen = ref<boolean>(false)
+
+const { isDarkTheme, toggleTheme } = useTheme()
+
+const themeIcon = computed(() => {
+  return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
+})
+
+function newFile(filename: string){
+  tabs.value.push({
+    name: filename,
+    code: ''
+  })
+}
+
 </script>
 
 <template>
@@ -55,33 +61,33 @@ function addTab() {}
     <TabList>
       <div class="my-tabs">
         <div>
-          <Tab v-for="(tab, i) in tabs" :key="i" :value="i" >
+          <Tab v-for="(tab, i) in tabs" :key="i" :value="i">
             {{ tab.name }}
           </Tab>
           <Button
             class="tab-btn"
-            :icon="plusIcon"
+            :icon="PrimeIcons.PLUS"
             severity="secondary"
             variant="text"
-            @click="addTab"
+            @click="isDialogOpen = true"
           />
         </div>
         <div class="controls">
           <Button
-            :icon="runIcon"
+            :icon="PrimeIcons.PLAY"
             :disabled="isCompiling"
             severity="success"
             variant="text"
-            @click="$emit('run', mainCode, className)"
+            @click="$emit('run', mainCode, 'Main.java')"
           />
           <Button
-            :icon="stopIcon"
+            :icon="PrimeIcons.STOP"
             :disabled="!isCompiling"
             severity="danger"
             variant="text"
             @click="$emit('stop')"
           />
-          <Button :icon="sunIcon" severity="primary" variant="text" @click="toggleTheme" />
+          <Button :icon="themeIcon" severity="secondary" variant="text" @click="toggleTheme" />
         </div>
       </div>
     </TabList>
@@ -91,6 +97,9 @@ function addTab() {}
       </TabPanel>
     </TabPanels>
   </Tabs>
+
+  <NewFileDialog v-model:visible="isDialogOpen" @save="newFile"/>
+
 </template>
 
 <style scoped lang="scss">

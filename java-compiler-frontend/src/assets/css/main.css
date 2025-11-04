@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+*{
+ font-size: 0.95rem;
+}
 
 body {
   font-family: 'Inter';
@@ -40,6 +43,10 @@ body {
 .p-splitter-gutter:hover {
   background-color: var(--p-primary-color);
   box-shadow: 0px 0px 0px 1px var(--p-primary-color);
+}
+
+.p-splitter{
+  border-radius: 0%!important;
 }
 
 .p-splitter, .p-splitterpanel {

@@ -10,7 +10,10 @@ declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
     CodeEditor: typeof import('./src/components/CodeEditor.vue')['default']
+    Dialog: typeof import('primevue/dialog')['default']
     EditorPanel: typeof import('./src/components/EditorPanel.vue')['default']
+    InputText: typeof import('primevue/inputtext')['default']
+    NewFileDialog: typeof import('./src/components/NewFileDialog.vue')['default']
     OutputPanel: typeof import('./src/components/OutputPanel.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
