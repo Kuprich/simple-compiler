@@ -8,6 +8,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AccordionContent: typeof import('primevue/accordioncontent')['default']
+    AccordionHeader: typeof import('primevue/accordionheader')['default']
+    AccordionPanel: typeof import('primevue/accordionpanel')['default']
     Button: typeof import('primevue/button')['default']
     CodeEditor: typeof import('./src/components/CodeEditor.vue')['default']
     EditorPanel: typeof import('./src/components/EditorPanel.vue')['default']
