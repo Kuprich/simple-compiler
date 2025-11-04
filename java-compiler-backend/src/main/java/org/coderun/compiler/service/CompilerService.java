@@ -33,11 +33,11 @@ public class CompilerService {
     @Autowired
     private CommandBuilderService commandBuilder;
 
-    public ApiResponse<String> saveSourceCode(CompileRequest request) {
+    public ApiResponse<String> saveFiles(SaveFilesRequest request) {
         //1. Save source code to file
         String codeDir = "";
         try {
-            codeDir = fileService.saveSourceCode(request.getFilename(), request.getCode());
+            codeDir = fileService.saveFiles(request.getFiles());
             return ApiResponse.success(codeDir);
         } catch (IOException e) {
             return ApiResponse.error(e.getMessage());
@@ -58,7 +58,7 @@ public class CompilerService {
         // 3. Create and run docker image
         try {
             File fullProjectDirectory = fileService.getFullProjectDirectory(request.getCodeDir());
-            String command = commandBuilder.buildJavaCompileAndRunCommand(fullProjectDirectory, "Main.java");
+            String command = commandBuilder.buildJavaCompileAndRunCommand(fullProjectDirectory);
             Bind bind = commandBuilder.createBind(fullProjectDirectory);
             String containerId = dockerService.createAndStartContainer(dockerImage, request.getCodeDir(), command, bind);
             return ApiResponse.success(containerId);

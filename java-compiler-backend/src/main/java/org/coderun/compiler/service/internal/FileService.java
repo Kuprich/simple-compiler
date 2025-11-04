@@ -3,6 +3,7 @@ package org.coderun.compiler.service.internal;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.coderun.compiler.dto.SourceCodeFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class FileService {
 
     private final String hostCodeDir;
+
     public FileService(@Value("${compiler.host.code.dir:auto}") String codeDirPath) {
         String finalPath;
 
@@ -38,15 +40,19 @@ public class FileService {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 
-    public String saveSourceCode(String filename, String code) throws IOException {
+    public String saveFiles(SourceCodeFile[] files) throws IOException {
         String projectName = "/project_" + generatePrefix();
         File projectDir = initializeDirectory(hostCodeDir + projectName);
-        File javaFile = new File(projectDir, filename);
-        Files.writeString(javaFile.toPath(), code, StandardCharsets.UTF_8);
-        log.debug("Source code saved to: {}", javaFile.getAbsolutePath());
+
+        for (SourceCodeFile file : files) {
+            File javaFile = new File(projectDir, file.getFilename());
+            Files.writeString(javaFile.toPath(), file.getCode(), StandardCharsets.UTF_8);
+            log.debug("file \"{}\" saved to: {}", file.getFilename(), javaFile.getAbsolutePath());
+        }
         return projectDir.getName();
     }
-    public File getFullProjectDirectory(String projectDir){
+
+    public File getFullProjectDirectory(String projectDir) {
         return new File(this.hostCodeDir, projectDir);
     }
 

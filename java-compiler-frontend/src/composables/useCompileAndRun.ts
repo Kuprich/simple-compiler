@@ -49,20 +49,20 @@ export function useCompileAndRun() {
       const pullStep = PipelineStepBuilder.buildPullStep()
       await performStep(pullStep, signal)
 
-      if (saveStep.status !== 'success') return
+      if (pullStep.status !== 'success') return
 
       // 3. prepare docker image and run
 
       const prepareStep = PipelineStepBuilder.buildPrepareStep({ codeDir: _codeDir })
       _containerId = (await performStep(prepareStep, signal)) as string
 
-      if (saveStep.status !== 'success') return
+      if (prepareStep.status !== 'success') return
 
       // 4. execute container with timeout
       const executeStep = PipelineStepBuilder.buildExecuteStep({ containerId: _containerId })
       await performStep(executeStep, signal)
 
-      if (saveStep.status !== 'success') return
+      if (executeStep.status !== 'success') return
 
       // 5. Collect logs
       const collectStep = PipelineStepBuilder.buildCollectStep({ containerId: _containerId })

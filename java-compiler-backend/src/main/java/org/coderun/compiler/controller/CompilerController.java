@@ -18,8 +18,8 @@ public class CompilerController {
 
     // 1 -> save code to dir
     @PostMapping("/save")
-    public ApiResponse<String> saveSourceCode(@RequestBody CompileRequest request) {
-        return compilerService.saveSourceCode(request);
+    public ApiResponse<String> saveFiles(@RequestBody SaveFilesRequest request) {
+        return compilerService.saveFiles(request);
     }
 
     // 2 -> pull docker image

@@ -6,7 +6,7 @@ compiler:
   timeout:
     seconds: 20
   java:
-    image: openjdk:17
+    image: eclipse-temurin:17-jdk-jammy
 
 springdoc:
   api-docs:

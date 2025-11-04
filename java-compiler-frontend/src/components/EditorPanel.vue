@@ -14,16 +14,23 @@ defineEmits<{
 }>()
 
 const mainCode = `public class Main {
-    public static void main(String[] args) {
-      Foo foo = new Foo();
-      for (int i = 0; i < 5; i++)
-        System.out.println(foo.sayHello());
+  public static void main(String[] args) {
+    Foo foo = new Foo("World");
+    for (int i = 0; i < 3; i++) {
+      foo.sayHello();
     }
+  }
 }`
 
 const fooCode = `public class Foo {
-  public void sayHello(string name){
-    System.out.println("Hello, " + name);
+  private final String name;
+
+  public Foo(String name) {
+    this.name = name;
+  }
+
+  public void sayHello() {
+    System.out.println("Hello, " + name + "!");
   }
 }`
 
