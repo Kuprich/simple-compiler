@@ -1,10 +1,9 @@
-import type { ApiRequest, PipelineStep } from '@/types/compiler'
+import type { ApiRequest, PipelineStep, SourceCode } from '@/types/compiler'
 import { reactive, type Reactive } from 'vue'
 
 
 interface SaveBody {
-  filename: string
-  code: string
+  files: SourceCode[]
 }
 
 interface PrepareBody {

@@ -3,43 +3,40 @@ import { computed, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
-import NewFileDialog from './NewFileDialog.vue';
+import PopoverComponent from './PopoverComponent.vue';
+import type { SourceCode } from '@/types/compiler';
 
 defineProps<{ isCompiling: boolean }>()
 
 defineEmits<{
-  run: [code: string, className: string]
+  run: [tabs: SourceCode[]]
   stop: []
 }>()
 
 const mainCode = `public class Main {
     public static void main(String[] args) {
+      Foo foo = new Foo();
       for (int i = 0; i < 5; i++)
-        System.out.println("Hello, World!");
+        System.out.println(foo.sayHello());
     }
 }`
 
 const fooCode = `public class Foo {
-
+  public void sayHello(string name){
+    System.out.println("Hello, " + name);
+  }
 }`
 
-interface TabItem {
-  name: string
-  code: string
-}
-
-const tabs = ref<TabItem[]>([
+const files = ref<SourceCode[]>([
   {
-    name: 'Main.java',
+    filename: 'Main.java',
     code: mainCode,
   },
   {
-    name: 'Foo.java',
+    filename: 'Foo.java',
     code: fooCode,
   },
 ])
-
-const isDialogOpen = ref<boolean>(false)
 
 const { isDarkTheme, toggleTheme } = useTheme()
 
@@ -47,9 +44,11 @@ const themeIcon = computed(() => {
   return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
 })
 
+const popoverRef = ref()
+
 function newFile(filename: string){
-  tabs.value.push({
-    name: filename,
+  files.value.push({
+    filename: filename,
     code: ''
   })
 }
@@ -61,15 +60,15 @@ function newFile(filename: string){
     <TabList>
       <div class="my-tabs">
         <div>
-          <Tab v-for="(tab, i) in tabs" :key="i" :value="i">
-            {{ tab.name }}
+          <Tab v-for="(tab, i) in files" :key="i" :value="i">
+            {{ tab.filename }}
           </Tab>
           <Button
             class="tab-btn"
             :icon="PrimeIcons.PLUS"
             severity="secondary"
             variant="text"
-            @click="isDialogOpen = true"
+            @click="popoverRef.toggle($event)"
           />
         </div>
         <div class="controls">
@@ -78,7 +77,7 @@ function newFile(filename: string){
             :disabled="isCompiling"
             severity="success"
             variant="text"
-            @click="$emit('run', mainCode, 'Main.java')"
+            @click="$emit('run', files)"
           />
           <Button
             :icon="PrimeIcons.STOP"
@@ -92,13 +91,14 @@ function newFile(filename: string){
       </div>
     </TabList>
     <TabPanels>
-      <TabPanel v-for="(tab, i) in tabs" :value="i" :key="i">
+      <TabPanel v-for="(tab, i) in files" :value="i" :key="i">
         <CodeEditor v-model="tab.code" />
       </TabPanel>
     </TabPanels>
   </Tabs>
 
-  <NewFileDialog v-model:visible="isDialogOpen" @save="newFile"/>
+  <!-- <NewFileDialog v-model:visible="isDialogOpen" @save="newFile"/> -->
+  <PopoverComponent ref="popoverRef" @save="newFile"/>
 
 </template>
 

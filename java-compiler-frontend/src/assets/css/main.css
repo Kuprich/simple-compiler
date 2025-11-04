@@ -53,3 +53,7 @@ body {
   overflow: hidden;
 }
 
+input{
+  --p-inputtext-padding-y: 0rem
+}
+

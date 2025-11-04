@@ -37,8 +37,7 @@ export function useCompileAndRun() {
       // 1. Save source code
 
       const saveStep = PipelineStepBuilder.buildSaveStep({
-        code: params.code,
-        filename: params.filename,
+        files: params.files
       })
       _codeDir = (await performStep(saveStep, signal)) as string
       if (saveStep.status !== 'success') return

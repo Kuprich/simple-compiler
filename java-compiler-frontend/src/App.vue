@@ -2,11 +2,12 @@
 import EditorPanel from './components/EditorPanel.vue'
 import OutputPanel from './components/OutputPanel.vue'
 import { useCompileAndRun } from './composables/useCompileAndRun'
+import type { SourceCode } from './types/compiler'
 
 const { compilerResponse, isCompiling, runCode, stopExecution } = useCompileAndRun()
 
-const handleRun = async (code: string, filename: string) => {
-  await runCode({ code, filename })
+const handleRun = async (files: SourceCode[]) => {
+  await runCode({files})
 }
 
 </script>

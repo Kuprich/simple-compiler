@@ -12,8 +12,7 @@ export interface CompilerResponse {
 }
 
 export interface RunCodeParams {
-  filename: string
-  code: string
+  files: SourceCode[]
 }
 
 export interface ApiRequest<T = unknown> {
@@ -28,3 +27,9 @@ export interface ApiResponse {
   error: string
   data: string
 }
+
+export interface SourceCode {
+  filename: string
+  code: string
+}
+
