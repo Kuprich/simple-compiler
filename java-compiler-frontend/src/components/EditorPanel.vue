@@ -3,7 +3,8 @@ import { computed, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
-import PopoverComponent from './PopoverComponent.vue';
+import NewFilePopover from './NewFilePopover.vue';
+import RightClickPopover from './RightClickPopover.vue';
 import type { SourceCode } from '@/types/compiler';
 
 defineProps<{ isCompiling: boolean }>()
@@ -51,13 +52,31 @@ const themeIcon = computed(() => {
   return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
 })
 
-const popoverRef = ref()
+const newFilePopoverRef = ref()
+const rightClickPopoverRef = ref()
+
+function openNewFilePopover(event: Event) {
+  rightClickPopoverRef.value?.hide()
+  newFilePopoverRef.value?.show(event, files.value)
+}
+
+function openRightClickPopover(event: Event, filename: string) {
+  newFilePopoverRef.value?.hide()
+  rightClickPopoverRef.value?.show(event, filename)
+}
 
 function newFile(filename: string){
   files.value.push({
     filename: filename,
     code: ''
   })
+}
+
+function deleteFile(filename: string){
+  const index = files.value.findIndex(file => file.filename === filename);
+  if (index !== -1) {
+    files.value.splice(index, 1);
+  }
 }
 
 </script>
@@ -67,7 +86,7 @@ function newFile(filename: string){
     <TabList>
       <div class="my-tabs">
         <div>
-          <Tab v-for="(tab, i) in files" :key="i" :value="i">
+          <Tab v-for="(tab, i) in files" :key="i" :value="i" @contextmenu.prevent="openRightClickPopover($event, tab.filename)">
             {{ tab.filename }}
           </Tab>
           <Button
@@ -75,7 +94,7 @@ function newFile(filename: string){
             :icon="PrimeIcons.PLUS"
             severity="secondary"
             variant="text"
-            @click="popoverRef.toggle($event)"
+            @click="openNewFilePopover($event)"
           />
         </div>
         <div class="controls">
@@ -104,7 +123,8 @@ function newFile(filename: string){
     </TabPanels>
   </Tabs>
 
-  <PopoverComponent ref="popoverRef" @save="newFile"/>
+  <NewFilePopover ref="newFilePopoverRef" @save="newFile"/>
+  <RightClickPopover ref="rightClickPopoverRef" @delete="deleteFile"/>
 
 </template>
 
