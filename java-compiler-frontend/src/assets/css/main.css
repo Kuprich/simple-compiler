@@ -57,3 +57,43 @@ input{
   --p-inputtext-padding-y: 0rem
 }
 
+.tabs {
+  --p-tabs-tabpanel-padding: 0;
+  --p-tabs-tab-font-weight: 400;
+  --p-tabs-tab-padding: 0.25rem 1.125rem;
+}
+
+div.p-menubar{
+  border-bottom: 1px solid var(--p-content-border-color);
+  border-right: 0;
+  border-left: 0;
+  border-top: 0;
+  border-radius: 0;
+  --p-menubar-padding: 0rem 0.2rem;
+}
+
+ul.p-menubar-submenu {
+  z-index: 2;
+}
+
+.p-menubar-item-content{
+  --p-menubar-base-item-border-radius: 0
+}
+
+.p-menubar-item-link{
+  --p-menubar-base-item-padding: 0.35rem 0.75rem;
+}
+
+.p-splitter {
+  border-radius: 0;
+}
+
+.p-accordionpanel:first-child > .p-accordionheader {
+  border-start-start-radius: 0!important;
+  border-start-end-radius: 0!important;
+}
+
+
+  /* --p-button-padding-x: 0;
+  --p-button-padding-y: 0.2rem;
+  border-radius: 0%; */

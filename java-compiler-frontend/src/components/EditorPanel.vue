@@ -104,17 +104,12 @@ function newFile(filename: string){
     </TabPanels>
   </Tabs>
 
-  <!-- <NewFileDialog v-model:visible="isDialogOpen" @save="newFile"/> -->
   <PopoverComponent ref="popoverRef" @save="newFile"/>
 
 </template>
 
 <style scoped lang="scss">
-.tabs {
-  --p-tabs-tabpanel-padding: 0;
-  --p-tabs-tab-font-weight: 400;
-  --p-tabs-tab-padding: 0.25rem 1.125rem;
-}
+
 .my-tabs {
   display: flex;
   flex: 1;

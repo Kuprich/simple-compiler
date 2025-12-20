@@ -4,6 +4,20 @@ import type { MenuItem } from 'primevue/menuitem'
 
 const items: MenuItem[] = [
   {
+    label: "File",
+    items: [
+      {
+        label: "New File"
+      },
+      {
+        label: "Rename"
+      },
+      {
+        label: "Remove"
+      }
+    ]
+  },
+  {
     label: "Theme",
     items: [
       {
@@ -35,8 +49,7 @@ const items: MenuItem[] = [
   </Menubar>
 </template>
 
-<style scoped>
-.p-menubar-submenu{
-  z-index: 2;
-}
+<style>
+
+
 </style>
