@@ -1,56 +1,63 @@
 <script setup lang="ts">
-import type { SourceCode } from '@/types/compiler';
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const op = ref()
-const filename = ref<string>('')
-const existingFiles = ref<SourceCode[]>()
+
+const name = ref('')
+const initialName = ref('')
+const takenNames = ref<string[]>([])
+const title = ref('')
 
 defineExpose({
-  show(event: Event, files: SourceCode[]) {
+  show(
+    event: Event,
+    options: {
+      title: string
+      initialName?: string
+      takenNames: string[]
+    }
+  ) {
+    title.value = options.title
+    name.value = options.initialName ?? ''
+    initialName.value = options.initialName ?? ''
+    takenNames.value = options.takenNames
     op.value?.show(event)
-    existingFiles.value = files
   },
   hide: () => op.value?.hide(),
-  toggle: (event: Event) => op.value?.toggle(event),
 })
 
 const emit = defineEmits<{
-  save: [name: string]
+  confirm: [name: string]
 }>()
 
-function saveClick() {
-  emit('save', filename.value)
-  filename.value = ''
+const isValid = computed(() => {
+  if (!name.value) return false
+  if (name.value === initialName.value) return false
+  return !takenNames.value.includes(name.value)
+})
+
+function confirmClick() {
+  emit('confirm', name.value)
+  name.value = ''
+  initialName.value = ''
   op.value?.hide()
 }
-
-function checkFileName(): boolean {
-  console.log(existingFiles)
-  if (filename.value.length < 1) return false
-
-  const fileExists = existingFiles.value?.some((file) => file.filename === filename.value)
-  if (fileExists) return false
-
-  return true
-}
 </script>
+
 <template>
-  <Popover ref="op" dismissable class="po">
+  <Popover ref="op" dismissable>
     <div class="flex flex-col gap-4">
-      <div>
-        <span class="font-medium block mb-2">New file</span>
-        <InputGroup>
-          <InputText v-model="filename" />
-          <Button
-            icon="pi pi-check"
-            class="p-0"
-            size="small"
-            @click="saveClick"
-            :disabled="!checkFileName()"
-          ></Button>
-        </InputGroup>
-      </div>
+      <span class="font-medium">{{ title }}</span>
+
+      <InputGroup>
+        <InputText v-model="name" autofocus />
+        <Button
+          icon="pi pi-check"
+          size="small"
+          :disabled="!isValid"
+          @click="confirmClick"
+        />
+      </InputGroup>
     </div>
   </Popover>
 </template>

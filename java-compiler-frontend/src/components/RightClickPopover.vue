@@ -14,11 +14,16 @@ defineExpose({
 })
 
 const emit = defineEmits<{
-  delete: [name: string]
+  delete: [filename: string],
+  rename: [filename: string]
 }>()
 
 function deleteClick() {
   emit('delete', currentFile.value)
+  op.value?.hide()
+}
+function renameClick() {
+  emit('rename', currentFile.value)
   op.value?.hide()
 }
 
@@ -29,6 +34,7 @@ const items: MenuItem[] = [
   },
   {
     label: 'Rename',
+    command: () => renameClick()
   },
 ]
 </script>

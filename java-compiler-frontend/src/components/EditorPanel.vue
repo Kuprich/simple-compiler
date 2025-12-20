@@ -3,9 +3,9 @@ import { computed, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
-import NewFilePopover from './NewFilePopover.vue';
-import RightClickPopover from './RightClickPopover.vue';
-import type { SourceCode } from '@/types/compiler';
+import NewFilePopover from './NewFilePopover.vue'
+import RightClickPopover from './RightClickPopover.vue'
+import type { SourceCode } from '@/types/compiler'
 
 defineProps<{ isCompiling: boolean }>()
 
@@ -47,6 +47,9 @@ const files = ref<SourceCode[]>([
 ])
 
 const { isDarkTheme, toggleTheme } = useTheme()
+const isCreateMode = ref<boolean>(true)
+const renameTarget = ref<string>('')
+const lastContextEvent = ref<Event | null>(null)
 
 const themeIcon = computed(() => {
   return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
@@ -56,29 +59,64 @@ const newFilePopoverRef = ref()
 const rightClickPopoverRef = ref()
 
 function openNewFilePopover(event: Event) {
+  isCreateMode.value = true
+
   rightClickPopoverRef.value?.hide()
-  newFilePopoverRef.value?.show(event, files.value)
+
+  newFilePopoverRef.value?.show(event, {
+    title: 'New file',
+    takenNames: files.value.map(f => f.filename),
+  })
+}
+
+function openRenameFilePopover(filename: string) {
+  isCreateMode.value = false
+  renameTarget.value = filename
+
+  rightClickPopoverRef.value?.hide()
+
+  newFilePopoverRef.value?.show(lastContextEvent.value, {
+    title: 'Rename file',
+    initialName: filename,
+    takenNames: files.value
+      .map(f => f.filename)
+      .filter(n => n !== filename),
+  })
 }
 
 function openRightClickPopover(event: Event, filename: string) {
+  lastContextEvent.value = event
   newFilePopoverRef.value?.hide()
   rightClickPopoverRef.value?.show(event, filename)
 }
 
-function newFile(filename: string){
-  files.value.push({
-    filename: filename,
-    code: ''
-  })
-}
-
-function deleteFile(filename: string){
-  const index = files.value.findIndex(file => file.filename === filename);
+function deleteFile(filename: string) {
+  const index = files.value.findIndex((file) => file.filename === filename)
   if (index !== -1) {
-    files.value.splice(index, 1);
+    files.value.splice(index, 1)
   }
 }
 
+function onConfirm(filename: string) {
+  if (isCreateMode.value) {
+    newFile(filename)
+  } else {
+    renameFile(filename)
+  }
+}
+
+function newFile(filename: string) {
+  files.value.push({
+    filename: filename,
+    code: '',
+  })
+}
+
+function renameFile(newFilename: string) {
+  const file = files.value.find((f) => f.filename === renameTarget.value)
+  if (!file) return
+  file.filename = newFilename
+}
 </script>
 
 <template>
@@ -86,7 +124,12 @@ function deleteFile(filename: string){
     <TabList>
       <div class="my-tabs">
         <div>
-          <Tab v-for="(tab, i) in files" :key="i" :value="i" @contextmenu.prevent="openRightClickPopover($event, tab.filename)">
+          <Tab
+            v-for="(tab, i) in files"
+            :key="i"
+            :value="i"
+            @contextmenu.prevent="openRightClickPopover($event, tab.filename)"
+          >
             {{ tab.filename }}
           </Tab>
           <Button
@@ -123,13 +166,11 @@ function deleteFile(filename: string){
     </TabPanels>
   </Tabs>
 
-  <NewFilePopover ref="newFilePopoverRef" @save="newFile"/>
-  <RightClickPopover ref="rightClickPopoverRef" @delete="deleteFile"/>
-
+  <NewFilePopover ref="newFilePopoverRef" @confirm="onConfirm" />
+  <RightClickPopover ref="rightClickPopoverRef" @delete="deleteFile" @rename="openRenameFilePopover" />
 </template>
 
 <style scoped lang="scss">
-
 .my-tabs {
   display: flex;
   flex: 1;
