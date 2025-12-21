@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
@@ -74,13 +74,13 @@ function openRenameFilePopover(filename: string) {
   renameTarget.value = filename
   rightClickPopoverRef.value?.hide()
 
-  nextTick(() => {
-    newFilePopoverRef.value?.showFromElement(lastTabElement.value, {
+  setTimeout(() => {
+    const tabs = document.querySelectorAll('.p-tab')
+    const tab = Array.from(tabs).find(t => t.textContent?.trim() === filename)
+    newFilePopoverRef.value?.showFromElement(tab as HTMLElement, {
       title: 'Rename file',
       initialName: filename,
-      takenNames: files.value
-        .map(f => f.filename)
-        .filter(n => n !== filename),
+      takenNames: files.value.map(f => f.filename).filter(n => n !== filename),
     })
   })
 }
