@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
@@ -49,7 +49,8 @@ const files = ref<SourceCode[]>([
 const { isDarkTheme, toggleTheme } = useTheme()
 const isCreateMode = ref<boolean>(true)
 const renameTarget = ref<string>('')
-const lastContextEvent = ref<Event | null>(null)
+
+const lastTabElement = ref<HTMLElement | null>(null)
 
 const themeIcon = computed(() => {
   return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
@@ -60,7 +61,6 @@ const rightClickPopoverRef = ref()
 
 function openNewFilePopover(event: Event) {
   isCreateMode.value = true
-
   rightClickPopoverRef.value?.hide()
 
   newFilePopoverRef.value?.show(event, {
@@ -72,21 +72,24 @@ function openNewFilePopover(event: Event) {
 function openRenameFilePopover(filename: string) {
   isCreateMode.value = false
   renameTarget.value = filename
-
   rightClickPopoverRef.value?.hide()
 
-  newFilePopoverRef.value?.show(lastContextEvent.value, {
-    title: 'Rename file',
-    initialName: filename,
-    takenNames: files.value
-      .map(f => f.filename)
-      .filter(n => n !== filename),
+  nextTick(() => {
+    newFilePopoverRef.value?.showFromElement(lastTabElement.value, {
+      title: 'Rename file',
+      initialName: filename,
+      takenNames: files.value
+        .map(f => f.filename)
+        .filter(n => n !== filename),
+    })
   })
 }
 
 function openRightClickPopover(event: Event, filename: string) {
-  lastContextEvent.value = event
   newFilePopoverRef.value?.hide()
+
+  lastTabElement.value = event.currentTarget as HTMLElement
+
   rightClickPopoverRef.value?.show(event, filename)
 }
 
@@ -99,24 +102,13 @@ function deleteFile(filename: string) {
 
 function onConfirm(filename: string) {
   if (isCreateMode.value) {
-    newFile(filename)
+    files.value.push({ filename, code: '' })
   } else {
-    renameFile(filename)
+    const file = files.value.find(f => f.filename === renameTarget.value)
+    if (file) file.filename = filename
   }
 }
 
-function newFile(filename: string) {
-  files.value.push({
-    filename: filename,
-    code: '',
-  })
-}
-
-function renameFile(newFilename: string) {
-  const file = files.value.find((f) => f.filename === renameTarget.value)
-  if (!file) return
-  file.filename = newFilename
-}
 </script>
 
 <template>

@@ -23,6 +23,25 @@ defineExpose({
     takenNames.value = options.takenNames
     op.value?.show(event)
   },
+
+  showFromElement(
+    el: HTMLElement | null,
+    options: {
+      title: string
+      initialName?: string
+      takenNames: string[]
+    }
+  ) {
+    if (!el) return
+
+    title.value = options.title
+    name.value = options.initialName ?? ''
+    initialName.value = options.initialName ?? ''
+    takenNames.value = options.takenNames
+
+    op.value?.show({ currentTarget: el })
+  },
+
   hide: () => op.value?.hide(),
 })
 
