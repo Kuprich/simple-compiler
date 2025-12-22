@@ -6,6 +6,8 @@ import { useTheme } from '@/composables/useTheme'
 import NewFilePopover from './NewFilePopover.vue'
 import RightClickPopover from './RightClickPopover.vue'
 import type { SourceCode } from '@/types/compiler'
+import ConfirmDialogComponent from './ConfirmDialogComponent.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 
 defineProps<{ isCompiling: boolean }>()
 
@@ -46,6 +48,8 @@ const files = ref<SourceCode[]>([
   },
 ])
 
+const { confirmDelete } = useConfirmDialog()
+
 const { isDarkTheme, toggleTheme } = useTheme()
 const isCreateMode = ref<boolean>(true)
 const renameTarget = ref<string>('')
@@ -65,7 +69,7 @@ function openNewFilePopover(event: Event) {
 
   newFilePopoverRef.value?.show(event, {
     title: 'New file',
-    takenNames: files.value.map(f => f.filename),
+    takenNames: files.value.map((f) => f.filename),
   })
 }
 
@@ -76,11 +80,11 @@ function openRenameFilePopover(filename: string) {
 
   setTimeout(() => {
     const tabs = document.querySelectorAll('.p-tab')
-    const tab = Array.from(tabs).find(t => t.textContent?.trim() === filename)
+    const tab = Array.from(tabs).find((t) => t.textContent?.trim() === filename)
     newFilePopoverRef.value?.showFromElement(tab as HTMLElement, {
       title: 'Rename file',
       initialName: filename,
-      takenNames: files.value.map(f => f.filename).filter(n => n !== filename),
+      takenNames: files.value.map((f) => f.filename).filter((n) => n !== filename),
     })
   })
 }
@@ -93,22 +97,37 @@ function openRightClickPopover(event: Event, filename: string) {
   rightClickPopoverRef.value?.show(event, filename)
 }
 
-function deleteFile(filename: string) {
-  const index = files.value.findIndex((file) => file.filename === filename)
-  if (index !== -1) {
-    files.value.splice(index, 1)
-  }
+function openDeleteDialog(filename: string) {
+  confirmDelete({
+    header: 'Delete Element',
+    message: `Are you sure you want to delete "${filename}"?`,
+    acceptIcon: 'pi pi-exclamation-circle',
+    onAccept: () => {
+      // deletion logic
+      const index = files.value.findIndex((file) => file.filename === filename)
+      if (index !== -1) {
+        files.value.splice(index, 1)
+      }
+    },
+    onReject: () => {
+      console.log('Deletion cancelled')
+    },
+  })
 }
+
+function deleteFile(filename: string) {
+  openDeleteDialog(filename)
+}
+
 
 function onConfirm(filename: string) {
   if (isCreateMode.value) {
     files.value.push({ filename, code: '' })
   } else {
-    const file = files.value.find(f => f.filename === renameTarget.value)
+    const file = files.value.find((f) => f.filename === renameTarget.value)
     if (file) file.filename = filename
   }
 }
-
 </script>
 
 <template>
@@ -159,7 +178,13 @@ function onConfirm(filename: string) {
   </Tabs>
 
   <NewFilePopover ref="newFilePopoverRef" @confirm="onConfirm" />
-  <RightClickPopover ref="rightClickPopoverRef" @delete="deleteFile" @rename="openRenameFilePopover" />
+  <RightClickPopover
+    ref="rightClickPopoverRef"
+    @delete="deleteFile"
+    @rename="openRenameFilePopover"
+  />
+
+  <ConfirmDialogComponent />
 </template>
 
 <style scoped lang="scss">

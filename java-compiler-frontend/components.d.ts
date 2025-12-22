@@ -13,6 +13,8 @@ declare module 'vue' {
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
     Button: typeof import('primevue/button')['default']
     CodeEditor: typeof import('./src/components/CodeEditor.vue')['default']
+    ConfirmDialog: typeof import('primevue/confirmdialog')['default']
+    ConfirmDialogComponent: typeof import('./src/components/ConfirmDialogComponent.vue')['default']
     EditorPanel: typeof import('./src/components/EditorPanel.vue')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputText: typeof import('primevue/inputtext')['default']
