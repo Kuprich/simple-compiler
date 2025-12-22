@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import CodeEditor from './CodeEditor.vue'
 import { PrimeIcons } from '@primevue/core/api'
 import { useTheme } from '@/composables/useTheme'
-import NewFilePopover from './NewFilePopover.vue'
+import FilePopover from './FilePopover.vue'
 import RightClickPopover from './RightClickPopover.vue'
 import type { SourceCode } from '@/types/compiler'
 import ConfirmDialogComponent from './ConfirmDialogComponent.vue'
@@ -60,14 +60,14 @@ const themeIcon = computed(() => {
   return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
 })
 
-const newFilePopoverRef = ref()
+const FilePopoverRef = ref()
 const rightClickPopoverRef = ref()
 
 function openNewFilePopover(event: Event) {
   isCreateMode.value = true
   rightClickPopoverRef.value?.hide()
 
-  newFilePopoverRef.value?.show(event, {
+  FilePopoverRef.value?.show(event, {
     title: 'New file',
     takenNames: files.value.map((f) => f.filename),
   })
@@ -81,7 +81,7 @@ function openRenameFilePopover(filename: string) {
   setTimeout(() => {
     const tabs = document.querySelectorAll('.p-tab')
     const tab = Array.from(tabs).find((t) => t.textContent?.trim() === filename)
-    newFilePopoverRef.value?.showFromElement(tab as HTMLElement, {
+    FilePopoverRef.value?.showFromElement(tab as HTMLElement, {
       title: 'Rename file',
       initialName: filename,
       takenNames: files.value.map((f) => f.filename).filter((n) => n !== filename),
@@ -90,7 +90,7 @@ function openRenameFilePopover(filename: string) {
 }
 
 function openRightClickPopover(event: Event, filename: string) {
-  newFilePopoverRef.value?.hide()
+  FilePopoverRef.value?.hide()
 
   lastTabElement.value = event.currentTarget as HTMLElement
 
@@ -99,7 +99,7 @@ function openRightClickPopover(event: Event, filename: string) {
 
 function openDeleteDialog(filename: string) {
   confirmDelete({
-    header: 'Delete Element',
+    header: 'Confirm deletion',
     message: `Are you sure you want to delete "${filename}"?`,
     acceptIcon: 'pi pi-exclamation-circle',
     onAccept: () => {
@@ -177,7 +177,7 @@ function onConfirm(filename: string) {
     </TabPanels>
   </Tabs>
 
-  <NewFilePopover ref="newFilePopoverRef" @confirm="onConfirm" />
+  <FilePopover ref="FilePopoverRef" @confirm="onConfirm" />
   <RightClickPopover
     ref="rightClickPopoverRef"
     @delete="deleteFile"

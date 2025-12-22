@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, onUnmounted, ref } from 'vue'
 
 const op = ref()
 
@@ -8,6 +8,17 @@ const initialName = ref('')
 const takenNames = ref<string[]>([])
 const title = ref('')
 
+// handle Enter & Esc keys
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter' && isValid.value) {
+    event.preventDefault()
+    confirmClick()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    op.value?.hide()
+  }
+}
+
 defineExpose({
   show(
     event: Event,
@@ -15,13 +26,23 @@ defineExpose({
       title: string
       initialName?: string
       takenNames: string[]
-    }
+    },
   ) {
     title.value = options.title
     name.value = options.initialName ?? ''
     initialName.value = options.initialName ?? ''
     takenNames.value = options.takenNames
     op.value?.show(event)
+    nextTick(() => {
+      document.addEventListener('keydown', handleKeydown)
+
+      // focus to input
+      const input = document.querySelector('.p-popover-content input')
+      if (input instanceof HTMLInputElement) {
+        input.focus()
+        input.select()
+      }
+    })
   },
 
   showFromElement(
@@ -30,7 +51,7 @@ defineExpose({
       title: string
       initialName?: string
       takenNames: string[]
-    }
+    },
   ) {
     if (!el) return
 
@@ -40,9 +61,23 @@ defineExpose({
     takenNames.value = options.takenNames
 
     op.value?.show({ currentTarget: el })
+
+    nextTick(() => {
+      document.addEventListener('keydown', handleKeydown)
+
+      // show to input
+      const input = document.querySelector('.p-popover-content input')
+      if (input instanceof HTMLInputElement) {
+        input.focus()
+        input.select()
+      }
+    })
   },
 
-  hide: () => op.value?.hide(),
+  hide: () => {
+    op.value?.hide()
+    document.removeEventListener('keydown', handleKeydown)
+  },
 })
 
 const emit = defineEmits<{
@@ -60,7 +95,12 @@ function confirmClick() {
   name.value = ''
   initialName.value = ''
   op.value?.hide()
+  document.removeEventListener('keydown', handleKeydown)
 }
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -69,12 +109,18 @@ function confirmClick() {
       <span class="font-medium">{{ title }}</span>
 
       <InputGroup>
-        <InputText v-model="name" autofocus />
+        <InputText
+          v-model="name"
+          autofocus
+          placeholder="Input filename"
+          @keyup.enter="confirmClick"
+        />
         <Button
           icon="pi pi-check"
           size="small"
           :disabled="!isValid"
           @click="confirmClick"
+          @keyup.enter="confirmClick"
         />
       </InputGroup>
     </div>
