@@ -8,6 +8,9 @@ import RightClickPopover from './RightClickPopover.vue'
 import type { SourceCode } from '@/types/compiler'
 import ConfirmDialogComponent from './ConfirmDialogComponent.vue'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { DEFAULT_FILES } from '@/constants/files'
+import { useFileManagement } from '@/composables/useFileManagement'
+import { findTabElementByFilename } from '@/utils/tabUtils'
 
 defineProps<{ isCompiling: boolean }>()
 
@@ -16,52 +19,22 @@ defineEmits<{
   stop: []
 }>()
 
-const mainCode = `public class Main {
-  public static void main(String[] args) {
-    Foo foo = new Foo("World");
-    for (int i = 0; i < 3; i++) {
-      foo.sayHello();
-    }
-  }
-}`
-
-const fooCode = `public class Foo {
-  private final String name;
-
-  public Foo(String name) {
-    this.name = name;
-  }
-
-  public void sayHello() {
-    System.out.println("Hello, " + name + "!");
-  }
-}`
-
-const files = ref<SourceCode[]>([
-  {
-    filename: 'Main.java',
-    code: mainCode,
-  },
-  {
-    filename: 'Foo.java',
-    code: fooCode,
-  },
-])
-
-const { confirmDelete } = useConfirmDialog()
-
 const { isDarkTheme, toggleTheme } = useTheme()
+const { confirmDelete } = useConfirmDialog()
+const fileManager = useFileManagement(DEFAULT_FILES)
+
+const { files } = fileManager
+
 const isCreateMode = ref<boolean>(true)
 const renameTarget = ref<string>('')
-
 const lastTabElement = ref<HTMLElement | null>(null)
+
+const FilePopoverRef = ref<InstanceType<typeof FilePopover>>()
+const rightClickPopoverRef = ref<InstanceType<typeof RightClickPopover>>()
 
 const themeIcon = computed(() => {
   return isDarkTheme.value ? PrimeIcons.MOON : PrimeIcons.SUN
 })
-
-const FilePopoverRef = ref()
-const rightClickPopoverRef = ref()
 
 function openNewFilePopover(event: Event) {
   isCreateMode.value = true
@@ -69,7 +42,7 @@ function openNewFilePopover(event: Event) {
 
   FilePopoverRef.value?.show(event, {
     title: 'New file',
-    takenNames: files.value.map((f) => f.filename),
+    takenNames: fileManager.getFileNames(),
   })
 }
 
@@ -79,12 +52,12 @@ function openRenameFilePopover(filename: string) {
   rightClickPopoverRef.value?.hide()
 
   setTimeout(() => {
-    const tabs = document.querySelectorAll('.p-tab')
-    const tab = Array.from(tabs).find((t) => t.textContent?.trim() === filename)
+    const tab = findTabElementByFilename(filename)
+
     FilePopoverRef.value?.showFromElement(tab as HTMLElement, {
       title: 'Rename file',
       initialName: filename,
-      takenNames: files.value.map((f) => f.filename).filter((n) => n !== filename),
+      takenNames: fileManager.getFileNames().filter((n) => n !== filename),
     })
   })
 }
@@ -103,11 +76,7 @@ function openDeleteDialog(filename: string) {
     message: `Are you sure you want to delete "${filename}"?`,
     acceptIcon: 'pi pi-exclamation-circle',
     onAccept: () => {
-      // deletion logic
-      const index = files.value.findIndex((file) => file.filename === filename)
-      if (index !== -1) {
-        files.value.splice(index, 1)
-      }
+      fileManager.deleteFile(filename)
     },
     onReject: () => {
       console.log('Deletion cancelled')
@@ -119,13 +88,11 @@ function deleteFile(filename: string) {
   openDeleteDialog(filename)
 }
 
-
 function onConfirm(filename: string) {
   if (isCreateMode.value) {
-    files.value.push({ filename, code: '' })
+    fileManager.addFile({ filename, code: '' })
   } else {
-    const file = files.value.find((f) => f.filename === renameTarget.value)
-    if (file) file.filename = filename
+    fileManager.renameFile(renameTarget.value, filename)
   }
 }
 </script>
@@ -136,12 +103,12 @@ function onConfirm(filename: string) {
       <div class="my-tabs">
         <div>
           <Tab
-            v-for="(tab, i) in files"
+            v-for="(file, i) in files"
             :key="i"
             :value="i"
-            @contextmenu.prevent="openRightClickPopover($event, tab.filename)"
+            @contextmenu.prevent="openRightClickPopover($event, file.filename)"
           >
-            {{ tab.filename }}
+            {{ file.filename }}
           </Tab>
           <Button
             class="tab-btn"
@@ -157,7 +124,7 @@ function onConfirm(filename: string) {
             :disabled="isCompiling"
             severity="success"
             variant="text"
-            @click="$emit('run', files)"
+            @click="$emit('run', fileManager.files.value)"
           />
           <Button
             :icon="PrimeIcons.STOP"
@@ -171,8 +138,8 @@ function onConfirm(filename: string) {
       </div>
     </TabList>
     <TabPanels>
-      <TabPanel v-for="(tab, i) in files" :value="i" :key="i">
-        <CodeEditor v-model="tab.code" />
+      <TabPanel v-for="(file, i) in files" :value="i" :key="i">
+        <CodeEditor v-model="file.code" />
       </TabPanel>
     </TabPanels>
   </Tabs>

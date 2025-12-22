@@ -91,11 +91,13 @@ const isValid = computed(() => {
 })
 
 function confirmClick() {
-  emit('confirm', name.value)
-  name.value = ''
-  initialName.value = ''
-  op.value?.hide()
-  document.removeEventListener('keydown', handleKeydown)
+  if (isValid.value) {
+    emit('confirm', name.value)
+    name.value = ''
+    initialName.value = ''
+    op.value?.hide()
+    document.removeEventListener('keydown', handleKeydown)
+  }
 }
 
 onUnmounted(() => {
