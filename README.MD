@@ -1,4 +1,4 @@
-## Java Online Compiler
+## Java Code Execution Sandbox
 A simple web-based Java compiler that allows users to write, compile, and run Java code directly in the browser.
 
 ![Vue app](./docs/images/vue_app.png)
